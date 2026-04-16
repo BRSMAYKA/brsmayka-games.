@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA AI - تحدي الـ 25</title>
+    <title>BRSMAYKA AI - النسخة المصلحة</title>
     <style>
         :root { --primary: #0088ff; --secondary: #ff3333; --bg: #050505; }
         * { box-sizing: border-box; touch-action: manipulation; }
@@ -84,8 +84,11 @@
         }
 
         let currentGame = '';
+        let timerInterval = null; // مخزن العداد لمنع التكرار
+
         function start(m) {
             currentGame = m;
+            clearInterval(timerInterval); // مسح أي عداد قديم
             document.getElementById('gameModal').style.display="block";
             const v = document.getElementById('game-view');
             if(m==='xo') loadXO(v);
@@ -104,7 +107,7 @@
             draw();
         }
 
-        // --- Ball Challenge (Target 20) ---
+        // --- Ball Challenge ---
         let ballLoop;
         function loadBall(v) {
             let p=0, r=0; v.innerHTML=`<h3>السباق لـ 20 نقطة</h3><div id="arena"><div id="ball"></div></div><div id="sc" style="font-weight:bold; margin-top:10px;">أنت: 0 | الروبوت: 0</div>`;
@@ -129,18 +132,59 @@
             }; g.appendChild(c); });
         }
 
-        // --- Speed Tap (Target 25) ---
+        // --- Speed Tap (Fixed Timer Problem) ---
         function loadTap(v) {
-            let c=0, target=25, t=5;
-            v.innerHTML=`<h3>تحدي السرعة</h3><p>الهدف: تجاوز 25 نقرة</p><h1 id="tm">5</h1><button class="btn" id="tp">إبدأ النقر!</button><h2>نقراتك: <span id="cc">0</span></h2>`;
-            const b=document.getElementById('tp');
-            b.onclick=()=>{
-                if(t===5){ let i=setInterval(()=>{ t--; document.getElementById('tm').innerText=t; if(t<=0){ clearInterval(i); if(c >= target) showResult("برق! ⚡", `حققت ${c} نقرة بنجاح`, true); else showResult("بطيء! 🤖", `نقراتك (${c}) لم تصل لـ 25`, false); } },1000); }
-                c++; document.getElementById('cc').innerText=c; sfx(500);
+            let clicks = 0, target = 25, timeLeft = 5;
+            let gameStarted = false;
+
+            v.innerHTML = `
+                <h3>تحدي السرعة</h3>
+                <p>الهدف: تجاوز 25 نقرة</p>
+                <h1 id="tm" style="font-size: 3.5rem; color: #ffbb00;">5</h1>
+                <button class="btn" id="tp" style="height: 100px; font-size: 1.5rem;">إبدأ النقر!</button>
+                <h2 style="margin-top:10px;">نقراتك: <span id="cc">0</span></h2>
+            `;
+
+            const btn = document.getElementById('tp');
+            const timerDisplay = document.getElementById('tm');
+            const clickCount = document.getElementById('cc');
+
+            btn.onclick = () => {
+                if (!gameStarted) {
+                    gameStarted = true;
+                    btn.innerText = "أسرررع! 🔥";
+                    
+                    // العداد المصلح
+                    timerInterval = setInterval(() => {
+                        timeLeft--;
+                        timerDisplay.innerText = timeLeft;
+
+                        if (timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            btn.disabled = true;
+                            if (clicks >= target) {
+                                showResult("برق! ⚡", `حققت ${clicks} نقرة بنجاح`, true);
+                            } else {
+                                showResult("بطيء! 🤖", `سجلت ${clicks} فقط، حاول مرة أخرى`, false);
+                            }
+                        }
+                    }, 1000);
+                }
+                
+                if (timeLeft > 0) {
+                    clicks++;
+                    clickCount.innerText = clicks;
+                    sfx(500, 0.05); // صوت نقرة خفيف وقصير جداً لا يتداخل
+                }
             };
         }
 
-        function stop() { clearTimeout(ballLoop); document.getElementById('gameModal').style.display="none"; currentGame = ''; }
+        function stop() { 
+            clearInterval(timerInterval); // إيقاف العداد عند إغلاق النافذة
+            clearTimeout(ballLoop); 
+            document.getElementById('gameModal').style.display="none"; 
+            currentGame = ''; 
+        }
     </script>
 </body>
 </html>
