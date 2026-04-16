@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA STUDIO - النسخة المستقرة</title>
+    <title>BRSMAYKA STUDIO - النسخة العملاقة</title>
     <style>
         :root { 
             --primary: #0088ff; 
@@ -15,13 +15,12 @@
         body { 
             background: var(--bg); 
             color: white; 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             margin: 0; 
             padding: 20px; 
             text-align: center;
         }
 
-        /* تنسيق العنوان والعداد */
         .header-box {
             display: flex;
             align-items: center;
@@ -32,7 +31,7 @@
         }
 
         .header-box h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: var(--primary);
             text-shadow: 0 0 10px var(--primary);
             margin: 0;
@@ -43,23 +42,23 @@
             padding: 5px 15px;
             border-radius: 50px;
             border: 1px solid var(--primary);
-            min-height: 30px;
             display: flex;
             align-items: center;
         }
 
-        /* الحاوية الرئيسية */
         .container { 
             display: flex; 
             flex-wrap: wrap; 
             justify-content: center; 
-            gap: 20px; 
+            gap: 15px; 
+            max-width: 900px;
+            margin: auto;
         }
 
         .game-card {
             background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 170px;
+            width: 160px;
             border-radius: 20px;
             padding: 20px;
             cursor: pointer;
@@ -72,7 +71,6 @@
             box-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
         }
 
-        /* النافذة المنبثقة */
         .modal { 
             display: none; 
             position: fixed; 
@@ -84,7 +82,7 @@
 
         .modal-content { 
             background: #111; 
-            margin: 10vh auto; 
+            margin: 8vh auto; 
             width: 85%; 
             max-width: 400px; 
             padding: 30px; 
@@ -93,20 +91,19 @@
             position: relative;
         }
 
-        .close-btn { 
-            position: absolute; 
-            left: 20px; 
-            top: 10px; 
-            font-size: 35px; 
-            cursor: pointer; 
-            color: #fff;
-        }
+        .close-btn { position: absolute; left: 20px; top: 10px; font-size: 35px; cursor: pointer; color: #fff; }
 
-        /* عناصر الألعاب */
-        .grid-xo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .cell-xo { background: #222; height: 70px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; cursor: pointer; }
-        .cell-xo.x { color: var(--secondary); text-shadow: 0 0 10px var(--secondary); }
-        .cell-xo.o { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        /* الألعاب */
+        .grid-xo, .grid-memory { display: grid; gap: 10px; margin-top: 15px; }
+        .grid-xo { grid-template-columns: repeat(3, 1fr); }
+        .grid-memory { grid-template-columns: repeat(4, 1fr); }
+        
+        .cell { background: #222; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .cell-xo { height: 70px; font-size: 30px; }
+        .cell-mem { height: 60px; font-size: 24px; background: #333; }
+        
+        .x { color: var(--secondary); text-shadow: 0 0 10px var(--secondary); }
+        .o { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
         .btn-action { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; }
         
@@ -125,15 +122,27 @@
 
     <div class="container">
         <div class="game-card" onclick="launchGame('xo')">
-            <div style="font-size: 45px; margin-bottom:10px;">❌</div>
+            <div style="font-size: 40px;">❌</div>
             <h3>تحدي X-O</h3>
-            <button class="btn-action">العب الآن</button>
+            <button class="btn-action">العب</button>
         </div>
 
         <div class="game-card" onclick="launchGame('ball')">
-            <div style="font-size: 45px; margin-bottom:10px;">👻</div>
+            <div style="font-size: 40px;">👻</div>
             <h3>الكرة الشبح</h3>
-            <button class="btn-action">العب الآن</button>
+            <button class="btn-action">العب</button>
+        </div>
+
+        <div class="game-card" onclick="launchGame('memory')">
+            <div style="font-size: 40px;">🧠</div>
+            <h3>الذاكرة</h3>
+            <button class="btn-action">العب</button>
+        </div>
+
+        <div class="game-card" onclick="launchGame('speed')">
+            <div style="font-size: 40px;">⚡</div>
+            <h3>تحدي النقر</h3>
+            <button class="btn-action">العب</button>
         </div>
     </div>
 
@@ -155,16 +164,19 @@
         function launchGame(type) {
             startAudioSystem();
             document.getElementById('mainModal').style.display = "block";
+            document.getElementById('retryBtn').style.display = "none";
             if(type === 'xo') initXO();
             else if(type === 'ball') initBall();
+            else if(type === 'memory') initMemory();
+            else if(type === 'speed') initSpeed();
         }
 
-        // --- منطق X-O ---
+        // --- X-O ---
         function initXO() {
             let board = ["","","","","","","","",""], active = true;
             const screen = document.getElementById('screen-game');
             const draw = () => {
-                screen.innerHTML = `<h3>تحدي الألوان (أزرق - أحمر)</h3><div class="grid-xo">${board.map((v,i)=>`<div class="cell-xo ${v.toLowerCase()}" onclick="handleXOMove(${i})">${v}</div>`).join('')}</div><h2 id="win-status"></h2>`;
+                screen.innerHTML = `<h3>X-O (أزرق - أحمر)</h3><div class="grid-xo">${board.map((v,i)=>`<div class="cell cell-xo ${v.toLowerCase()}" onclick="handleXOMove(${i})">${v}</div>`).join('')}</div><h2 id="win-status"></h2>`;
             };
             window.handleXOMove = (i) => {
                 if(board[i] === "" && active) {
@@ -179,43 +191,4 @@
             };
             const checkFinal = (b) => {
                 const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-                for(let l of lines) {
-                    if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[0]]===b[l[2]]) {
-                        active = false;
-                        document.getElementById('win-status').innerText = b[l[0]]==="X" ? "فاز الأحمر! 🔥" : "فاز الأزرق! 🤖";
-                        document.getElementById('retryBtn').style.display = "inline-block";
-                        document.getElementById('retryBtn').onclick = initXO;
-                        return true;
-                    }
-                }
-                if(!b.includes("")) { document.getElementById('win-status').innerText = "تعادل! 🤝"; document.getElementById('retryBtn').style.display = "inline-block"; return true; }
-                return false;
-            };
-            draw();
-        }
-
-        // --- منطق الكرة ---
-        let ballInterval;
-        function initBall() {
-            let score = 0;
-            document.getElementById('screen-game').innerHTML = `<h3>اصطد الشبح الأصفر</h3><div id="arena-ball"><div id="ball-target" onclick="catchBall()"></div></div><h2>النقاط: <span id="pts-count">0</span></h2>`;
-            const ball = document.getElementById('ball-target');
-            window.catchBall = () => { score++; document.getElementById('pts-count').innerText = score; beep(800); resetBall(); };
-            const resetBall = () => {
-                clearTimeout(ballInterval);
-                ball.style.display = "block"; ball.style.opacity = "1";
-                ball.style.top = Math.random()*150+"px"; ball.style.left = Math.random()*300+"px";
-                setTimeout(() => { ball.style.opacity = "0"; }, 600);
-                ballInterval = setTimeout(resetBall, 1600);
-            };
-            resetBall();
-        }
-
-        function terminateGame() {
-            clearTimeout(ballInterval);
-            document.getElementById('mainModal').style.display = "none";
-            document.getElementById('retryBtn').style.display = "none";
-        }
-    </script>
-</body>
-</html>
+                for(let l of lines) { if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[0]]===b[l[2]]) { active = false; document.getElementById('win-status').innerText = b[l[0]]==="X" ? "فاز الأحمر! 🔥" : "فاز الأزرق! 🤖"; document.getElementById('retryBtn').style.display = "
