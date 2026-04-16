@@ -3,216 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA Game Studio</title>
+    <title>ستوديو ألعاب BRSMAYKA الاحترافي</title>
     <style>
-        body {
-            background-color: #0d0d0d;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
-            border-bottom: 3px solid #00ffcc;
-            border-radius: 20px;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            color: #00ffcc;
-            font-size: 3rem;
-            text-shadow: 0 0 15px #00ffcc;
-            margin: 0;
-        }
-
-        .games-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-        }
-
+        :root { --primary: #00ffcc; --bg: #0a0a0a; --card: #161616; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .header { text-align: center; padding: 30px; border-bottom: 2px solid var(--primary); margin-bottom: 30px; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: auto; }
+        
+        /* تصميم البطاقات */
         .game-card {
-            background: #1a1a1a;
-            width: 300px;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 2px solid #333;
-            transition: 0.3s;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            background: var(--card); border: 1px solid #333; width: 220px; border-radius: 15px;
+            padding: 20px; text-align: center; transition: 0.3s; cursor: pointer; position: relative;
+        }
+        .game-card:hover { 
+            transform: scale(1.05); border-color: var(--primary); 
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
+        .icon { font-size: 50px; margin-bottom: 10px; display: block; }
+        .play-btn { 
+            background: var(--primary); color: black; border: none; padding: 10px; 
+            border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; cursor: pointer;
         }
 
-        .game-card:hover {
-            transform: translateY(-10px);
-            border-color: #00ffcc;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+        /* النافذة المنبثقة */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; }
+        .modal-content { 
+            background: #222; margin: 5% auto; width: 90%; max-width: 500px; 
+            padding: 20px; border-radius: 20px; border: 2px solid var(--primary); position: relative;
         }
-
-        .game-icon {
-            font-size: 80px;
-            padding: 40px;
-            background: #222;
-        }
-
-        .game-info {
-            padding: 20px;
-        }
-
-        .play-btn {
-            background: #00ffcc;
-            color: #000;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.1rem;
-            width: 100%;
-            transition: 0.3s;
-        }
-
-        .play-btn:hover {
-            background: #fff;
-            transform: scale(1.05);
-        }
-
-        /* تنسيق اللعبة المنبثقة */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-        }
-
-        .modal-content {
-            background-color: #222;
-            margin: 5% auto;
-            padding: 20px;
-            border: 2px solid #00ffcc;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 20px;
-            position: relative;
-        }
-
-        .close {
-            color: white;
-            float: left;
-            font-size: 30px;
-            cursor: pointer;
-        }
+        .close { position: absolute; left: 20px; top: 10px; font-size: 30px; cursor: pointer; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>ستوديو ألعاب BRSMAYKA</h1>
-        <p>مرحباً بك في عالم الألعاب الحصرية والفريدة</p>
+<div class="header">
+    <h1>🎮 استوديو BRSMAYKA المطور</h1>
+    <p>ألعاب حصرية مع مؤثرات صوتية</p>
+</div>
+
+<div class="container">
+    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('clicker')">
+        <span class="icon">⚡</span>
+        <h3>تحدي النقر</h3>
+        <button class="play-btn">اضغط هنا للعب</button>
     </div>
 
-    <div class="games-grid">
-        <div class="game-card">
-            <div class="game-icon">⚡</div>
-            <div class="game-info">
-                <h3>تحدي النقر السريع</h3>
-                <p>أرنا سرعتك في 10 ثوانٍ!</p>
-                <button class="play-btn" onclick="openGame('clicker')">اضغط هنا للعب</button>
-            </div>
-        </div>
-
-        <div class="game-card">
-            <div class="game-icon">⚽</div>
-            <div class="game-info">
-                <h3>ضربات الجزاء السوبر</h3>
-                <p>سدد بدقة واهزم الحارس!</p>
-                <button class="play-btn" onclick="openGame('penalty')">اضغط هنا للعب</button>
-            </div>
-        </div>
+    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('penalty')">
+        <span class="icon">⚽</span>
+        <h3>ضربات جزاء</h3>
+        <button class="play-btn">اضغط هنا للعب</button>
     </div>
 
-    <div id="gameModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeGame()">&times;</span>
-            <div id="gameArea"></div>
-        </div>
+    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('xo')">
+        <span class="icon">❌</span>
+        <h3>لعبة X-O</h3>
+        <button class="play-btn">اضغط هنا للعب</button>
     </div>
 
-    <script>
-        function openGame(type) {
-            const modal = document.getElementById('gameModal');
-            const area = document.getElementById('gameArea');
-            modal.style.display = "block";
+    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('wall')">
+        <span class="icon">🎾</span>
+        <h3>الضرب على الحائط</h3>
+        <button class="play-btn">اضغط هنا للعب</button>
+    </div>
 
-            if(type === 'clicker') {
-                area.innerHTML = `
-                    <div style="text-align:center">
-                        <h2>تحدي النقر</h2>
-                        <h1 id="s_score">0</h1>
-                        <h3 id="s_timer">الوقت: 10</h3>
-                        <button onclick="addPoint()" id="btn_p" style="padding:20px; font-size:20px; width:100%; background:#ff0055; color:white; border:none; border-radius:10px;">اضغط هنا!</button>
-                        <button onclick="startClickGame()" style="margin-top:10px">ابدأ</button>
-                    </div>`;
-            } else {
-                area.innerHTML = `
-                    <div style="text-align:center">
-                        <h2>ضربات جزاء</h2>
-                        <div style="height:100px; border:2px solid white; position:relative; margin-bottom:10px">
-                            <div id="kpr" style="position:absolute; bottom:0; left:45%; font-size:30px">🧤</div>
-                        </div>
-                        <div id="p_res">سدد!</div>
-                        <button onclick="kick('left')">يسار</button>
-                        <button onclick="kick('center')">وسط</button>
-                        <button onclick="kick('right')">يمين</button>
-                    </div>`;
-            }
-        }
+    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('chess')">
+        <span class="icon">♟️</span>
+        <h3>شطرنج خفيف</h3>
+        <button class="play-btn">اضغط هنا للعب</button>
+    </div>
+</div>
 
-        function closeGame() {
-            document.getElementById('gameModal').style.display = "none";
-        }
+<div id="gameModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeGame()">&times;</span>
+        <div id="gameArea"></div>
+    </div>
+</div>
 
-        // منطق لعبة النقر
-        let p_score = 0; let p_time = 10; let p_active = false;
-        function startClickGame() {
-            p_score = 0; p_time = 10; p_active = true;
-            document.getElementById('s_score').innerText = p_score;
-            let inter = setInterval(() => {
-                p_time--;
-                document.getElementById('s_timer').innerText = "الوقت: " + p_time;
-                if(p_time <= 0) { clearInterval(inter); p_active = false; alert("انتهى! نقاطك: " + p_score); }
-            }, 1000);
-        }
-        function addPoint() { if(p_active) { p_score++; document.getElementById('s_score').innerText = p_score; } }
+<script>
+    // --- نظام الصوت الذكي ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(freq, type, duration) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = freq;
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + duration);
+    }
+    function playTick() { playSound(800, 'sine', 0.05); } // صوت عند مرور الماوس
+    function playClick() { playSound(400, 'square', 0.1); } // صوت عند الضغط
 
-        // منطق لعبة الكرة
-        function kick(dir) {
-            const dirs = ['left', 'center', 'right'];
-            const kDir = dirs[Math.floor(Math.random()*3)];
-            const kpr = document.getElementById('kpr');
-            if(kDir === 'left') kpr.style.left = '10%';
-            else if(kDir === 'center') kpr.style.left = '45%';
-            else kpr.style.left = '80%';
-            
-            if(dir === kDir) document.getElementById('p_res').innerText = "صدها! ❌";
-            else document.getElementById('p_res').innerText = "هدف! ⚽";
+    // --- نظام الألعاب ---
+    function openGame(game) {
+        const area = document.getElementById('gameArea');
+        document.getElementById('gameModal').style.display = "block";
+        if(game === 'xo') {
+            area.innerHTML = `<h3>لعبة X-O</h3><div id="xo-board" style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px; max-width:200px; margin:auto;">` + 
+            Array(9).fill().map((_,i)=>`<button onclick="playXO(this)" style="height:60px; font-size:24px; background:#444; color:white; border:none;"></button>`).join('') + `</div>`;
+        } else if(game === 'wall') {
+            area.innerHTML = `<h3>الضرب على الحائط</h3><p>اضغط على الكرة قبل أن تختفي!</p><div id="ball" onclick="hitBall()" style="width:50px; height:50px; background:yellow; border-radius:50%; position:relative; margin:auto; cursor:pointer;"></div>`;
+        } else if(game === 'chess') {
+            area.innerHTML = `<h3>شطرنج BRSMAYKA</h3><p>نسخة تجريبية: حرك القطع ذهنياً (قريباً التطوير الكامل)</p><div style="font-size:40px;">🏰🐎🐘👸🤴</div>`;
+        } else if(game === 'clicker') {
+            area.innerHTML = `<h3>تحدي النقر</h3><button onclick="playClick()" style="padding:20px; width:100%;">اضغط!</button>`;
+        } else if(game === 'penalty') {
+            area.innerHTML = `<h3>ضربات جزاء</h3><div style="display:flex; gap:10px; justify-content:center;"><button onclick="playClick()">يسار</button><button onclick="playClick()">وسط</button><button onclick="playClick()">يمين</button></div>`;
         }
-    </script>
-    <div style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid #333;">
-    <p style="color: #00ffcc; font-size: 14px; margin-bottom: 10px;">إجمالي زوار الاستوديو:</p>
-    
+    }
+
+    function closeGame() { document.getElementById('gameModal').style.display = "none"; }
+
+    // وظائف الألعاب الصغيرة
+    function playXO(btn) { if(!btn.innerText) { btn.innerText = 'X'; btn.style.background = '#00ffcc'; playClick(); } }
+    function hitBall() { 
+        const b = document.getElementById('ball');
+        b.style.left = Math.random()*150 + 'px';
+        b.style.top = Math.random()*50 + 'px';
+        playClick();
+    }
+</script>
+
+<div style="text-align: center; margin-top: 50px; border-top: 1px solid #333; padding: 20px;">
+    <p style="color:var(--primary)">إجمالي زوار ستوديو BRSMAYKA:</p>
     <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
-    
-    <p style="color: #555; font-size: 12px; margin-top: 10px;">نحن نكبر بفضلكم! 🚀</p>
 </div>
+
 </body>
 </html>
