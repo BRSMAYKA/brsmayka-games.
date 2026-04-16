@@ -3,132 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ستوديو ألعاب BRSMAYKA الاحترافي</title>
+    <title>ستوديو ألعاب BRSMAYKA - نسخة الروبوت</title>
     <style>
         :root { --primary: #00ffcc; --bg: #0a0a0a; --card: #161616; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-        .header { text-align: center; padding: 30px; border-bottom: 2px solid var(--primary); margin-bottom: 30px; }
-        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: auto; }
-        
-        /* تصميم البطاقات */
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px; }
         .game-card {
-            background: var(--card); border: 1px solid #333; width: 220px; border-radius: 15px;
-            padding: 20px; text-align: center; transition: 0.3s; cursor: pointer; position: relative;
+            background: var(--card); border: 2px solid #333; width: 200px; border-radius: 15px;
+            padding: 20px; transition: 0.3s; cursor: pointer;
         }
-        .game-card:hover { 
-            transform: scale(1.05); border-color: var(--primary); 
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-        }
-        .icon { font-size: 50px; margin-bottom: 10px; display: block; }
-        .play-btn { 
-            background: var(--primary); color: black; border: none; padding: 10px; 
-            border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; cursor: pointer;
-        }
+        .game-card:hover { transform: scale(1.05); border-color: var(--primary); }
+        .play-btn { background: var(--primary); border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        /* تصميم طاولة X-O */
+        .xo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 250px; margin: 20px auto; }
+        .cell { width: 80px; height: 80px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; cursor: pointer; border-radius: 10px; }
+        .cell.x { color: #ff0055; }
+        .cell.o { color: var(--primary); }
 
-        /* النافذة المنبثقة */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; }
-        .modal-content { 
-            background: #222; margin: 5% auto; width: 90%; max-width: 500px; 
-            padding: 20px; border-radius: 20px; border: 2px solid var(--primary); position: relative;
-        }
-        .close { position: absolute; left: 20px; top: 10px; font-size: 30px; cursor: pointer; color: white; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; padding-top: 50px; }
+        .modal-content { background: #222; margin: auto; width: 90%; max-width: 450px; padding: 30px; border-radius: 20px; border: 2px solid var(--primary); position: relative; }
+        .close { position: absolute; left: 20px; top: 10px; font-size: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>🎮 استوديو BRSMAYKA المطور</h1>
-    <p>ألعاب حصرية مع مؤثرات صوتية</p>
-</div>
+    <h1>🎮 ستوديو BRSMAYKA الذكي</h1>
+    <p>تحدى الروبوت في ألعابنا الجديدة!</p>
 
-<div class="container">
-    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('clicker')">
-        <span class="icon">⚡</span>
-        <h3>تحدي النقر</h3>
-        <button class="play-btn">اضغط هنا للعب</button>
+    <div class="container">
+        <div class="game-card" onmouseenter="playTick()" onclick="openGame('xo')">
+            <span style="font-size:50px">❌</span>
+            <h3>X-O ضد الروبوت</h3>
+            <button class="play-btn">العب الآن</button>
+        </div>
+        <div class="game-card" onmouseenter="playTick()" onclick="openGame('ball')">
+            <span style="font-size:50px">🎾</span>
+            <h3>صيد الكرة</h3>
+            <button class="play-btn">العب الآن</button>
+        </div>
     </div>
 
-    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('penalty')">
-        <span class="icon">⚽</span>
-        <h3>ضربات جزاء</h3>
-        <button class="play-btn">اضغط هنا للعب</button>
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeGame()">&times;</span>
+            <div id="gameArea"></div>
+        </div>
     </div>
-
-    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('xo')">
-        <span class="icon">❌</span>
-        <h3>لعبة X-O</h3>
-        <button class="play-btn">اضغط هنا للعب</button>
-    </div>
-
-    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('wall')">
-        <span class="icon">🎾</span>
-        <h3>الضرب على الحائط</h3>
-        <button class="play-btn">اضغط هنا للعب</button>
-    </div>
-
-    <div class="game-card" onmouseenter="playTick()" onclick="playClick(); openGame('chess')">
-        <span class="icon">♟️</span>
-        <h3>شطرنج خفيف</h3>
-        <button class="play-btn">اضغط هنا للعب</button>
-    </div>
-</div>
-
-<div id="gameModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeGame()">&times;</span>
-        <div id="gameArea"></div>
-    </div>
-</div>
 
 <script>
-    // --- نظام الصوت الذكي ---
+    // نظام الصوت
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playSound(freq, type, duration) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type; osc.frequency.value = freq;
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-        osc.stop(audioCtx.currentTime + duration);
+    function playSound(f, d) {
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.frequency.value = f; o.connect(g); g.connect(audioCtx.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + d); o.stop(audioCtx.currentTime + d);
     }
-    function playTick() { playSound(800, 'sine', 0.05); } // صوت عند مرور الماوس
-    function playClick() { playSound(400, 'square', 0.1); } // صوت عند الضغط
+    function playTick() { playSound(800, 0.05); }
+    function playWin() { playSound(500, 0.3); playSound(700, 0.5); }
 
-    // --- نظام الألعاب ---
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let gameActive = true;
+
     function openGame(game) {
         const area = document.getElementById('gameArea');
         document.getElementById('gameModal').style.display = "block";
         if(game === 'xo') {
-            area.innerHTML = `<h3>لعبة X-O</h3><div id="xo-board" style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px; max-width:200px; margin:auto;">` + 
-            Array(9).fill().map((_,i)=>`<button onclick="playXO(this)" style="height:60px; font-size:24px; background:#444; color:white; border:none;"></button>`).join('') + `</div>`;
-        } else if(game === 'wall') {
-            area.innerHTML = `<h3>الضرب على الحائط</h3><p>اضغط على الكرة قبل أن تختفي!</p><div id="ball" onclick="hitBall()" style="width:50px; height:50px; background:yellow; border-radius:50%; position:relative; margin:auto; cursor:pointer;"></div>`;
-        } else if(game === 'chess') {
-            area.innerHTML = `<h3>شطرنج BRSMAYKA</h3><p>نسخة تجريبية: حرك القطع ذهنياً (قريباً التطوير الكامل)</p><div style="font-size:40px;">🏰🐎🐘👸🤴</div>`;
-        } else if(game === 'clicker') {
-            area.innerHTML = `<h3>تحدي النقر</h3><button onclick="playClick()" style="padding:20px; width:100%;">اضغط!</button>`;
-        } else if(game === 'penalty') {
-            area.innerHTML = `<h3>ضربات جزاء</h3><div style="display:flex; gap:10px; justify-content:center;"><button onclick="playClick()">يسار</button><button onclick="playClick()">وسط</button><button onclick="playClick()">يمين</button></div>`;
+            board = ["", "", "", "", "", "", "", "", ""]; gameActive = true;
+            renderXO();
+        } else if(game === 'ball') {
+            area.innerHTML = `<h3>اصطاد الكرة الصفراء!</h3><div id="arena" style="height:200px; position:relative; background:#111; overflow:hidden; border-radius:10px;">
+                <div id="target" onclick="hit()" style="width:40px; height:40px; background:yellow; border-radius:50%; position:absolute; cursor:pointer; top:50px; left:50px; transition:0.2s;"></div>
+            </div><p id="score">النقاط: 0</p>`;
         }
     }
 
-    function closeGame() { document.getElementById('gameModal').style.display = "none"; }
-
-    // وظائف الألعاب الصغيرة
-    function playXO(btn) { if(!btn.innerText) { btn.innerText = 'X'; btn.style.background = '#00ffcc'; playClick(); } }
-    function hitBall() { 
-        const b = document.getElementById('ball');
-        b.style.left = Math.random()*150 + 'px';
-        b.style.top = Math.random()*50 + 'px';
-        playClick();
+    // --- منطق X-O ضد الروبوت ---
+    function renderXO() {
+        const area = document.getElementById('gameArea');
+        area.innerHTML = `<h3>أنت (X) ضد الروبوت (O)</h3><div class="xo-grid">${board.map((v, i) => `<div class="cell ${v.toLowerCase()}" onclick="playerMove(${i})">${v}</div>`).join('')}</div><p id="status"></p>`;
     }
+
+    function playerMove(i) {
+        if(board[i] === "" && gameActive) {
+            board[i] = "X";
+            playSound(400, 0.1);
+            checkWinner();
+            if(gameActive) setTimeout(robotMove, 500);
+            renderXO();
+        }
+    }
+
+    function robotMove() {
+        let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+        if(empty.length > 0) {
+            let move = empty[Math.floor(Math.random() * empty.length)];
+            board[move] = "O";
+            playSound(300, 0.1);
+            checkWinner();
+            renderXO();
+        }
+    }
+
+    function checkWinner() {
+        const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for(let p of winPatterns) {
+            if(board[p[0]] && board[p[0]] === board[p[1]] && board[p[0]] === board[p[2]]) {
+                gameActive = false;
+                document.getElementById('status').innerText = board[p[0]] === "X" ? "مبروك! فزت على الروبوت 🏆" : "الروبوت فاز! حاول ثانية 🤖";
+                if(board[p[0]] === "X") playWin();
+                return;
+            }
+        }
+        if(!board.includes("")) { gameActive = false; document.getElementById('status').innerText = "تعادل! 🤝"; }
+    }
+
+    // --- لعبة صيد الكرة ---
+    let points = 0;
+    function hit() {
+        points++;
+        document.getElementById('score').innerText = "النقاط: " + points;
+        const t = document.getElementById('target');
+        t.style.top = Math.random() * 150 + "px";
+        t.style.left = Math.random() * 350 + "px";
+        playSound(600, 0.1);
+    }
+
+    function closeGame() { document.getElementById('gameModal').style.display = "none"; }
 </script>
 
-<div style="text-align: center; margin-top: 50px; border-top: 1px solid #333; padding: 20px;">
-    <p style="color:var(--primary)">إجمالي زوار ستوديو BRSMAYKA:</p>
+<div style="margin-top:50px; border-top:1px solid #333; padding:20px;">
     <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
 </div>
-
 </body>
 </html>
