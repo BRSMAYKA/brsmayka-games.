@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA STUDIO - النسخة العملاقة</title>
+    <title>BRSMAYKA STUDIO - النسخة الاحترافية</title>
     <style>
         :root { 
             --primary: #0088ff; 
             --secondary: #ff3333; 
-            --bg: #0a0a0a; 
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --bg: #050505; 
         }
+
+        /* منع التداخل */
+        * { box-sizing: border-box; touch-action: manipulation; }
 
         body { 
             background: var(--bg); 
@@ -19,26 +21,39 @@
             margin: 0; 
             padding: 20px; 
             text-align: center;
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* تأثير الخلفية - بعيد عن الأزرار */
+        .bg-effects {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; /* خلف كل شيء */
+            background: radial-gradient(circle at center, #111 0%, #050505 100%);
+            overflow: hidden;
+        }
+
+        /* هيدر الصفحة والعداد */
         .header-box {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
         }
 
         .header-box h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: var(--primary);
-            text-shadow: 0 0 10px var(--primary);
+            text-shadow: 0 0 15px var(--primary);
             margin: 0;
         }
 
-        .counter-container {
-            background: rgba(0, 136, 255, 0.1);
+        .counter-pill {
+            background: rgba(255, 255, 255, 0.1);
             padding: 5px 15px;
             border-radius: 50px;
             border: 1px solid var(--primary);
@@ -46,17 +61,18 @@
             align-items: center;
         }
 
+        /* كروت الألعاب */
         .container { 
             display: flex; 
             flex-wrap: wrap; 
             justify-content: center; 
             gap: 15px; 
-            max-width: 900px;
-            margin: auto;
+            position: relative;
+            z-index: 10;
         }
 
         .game-card {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             width: 160px;
             border-radius: 20px;
@@ -66,194 +82,182 @@
         }
 
         .game-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
             border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
+            background: rgba(0, 136, 255, 0.1);
         }
 
+        /* النافذة المنبثقة */
         .modal { 
             display: none; 
             position: fixed; 
             inset: 0; 
-            background: rgba(0,0,0,0.95); 
+            background: rgba(0,0,0,0.9); 
             z-index: 9999; 
             backdrop-filter: blur(10px);
         }
 
         .modal-content { 
             background: #111; 
-            margin: 8vh auto; 
+            margin: 10vh auto; 
             width: 85%; 
             max-width: 400px; 
-            padding: 30px; 
+            padding: 25px; 
             border-radius: 25px; 
             border: 2px solid var(--primary); 
             position: relative;
         }
 
-        .close-btn { position: absolute; left: 20px; top: 10px; font-size: 35px; cursor: pointer; color: #fff; }
-
-        /* الألعاب */
-        .grid-xo, .grid-memory { display: grid; gap: 10px; margin-top: 15px; }
-        .grid-xo { grid-template-columns: repeat(3, 1fr); }
-        .grid-memory { grid-template-columns: repeat(4, 1fr); }
-        
-        .cell { background: #222; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .cell-xo { height: 70px; font-size: 30px; }
-        .cell-mem { height: 60px; font-size: 24px; background: #333; }
-        
+        /* ألوان اللعب */
+        .cell { background: #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+        .cell-xo { height: 75px; font-size: 35px; }
+        .cell-mem { height: 60px; font-size: 25px; background: #333; }
         .x { color: var(--secondary); text-shadow: 0 0 10px var(--secondary); }
         .o { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        .btn-action { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        
-        #arena-ball { height: 200px; background: #000; position: relative; border-radius: 15px; border: 1px solid #333; overflow: hidden; }
-        #ball-target { width: 40px; height: 40px; background: yellow; border-radius: 50%; position: absolute; cursor: pointer; display: none; box-shadow: 0 0 20px yellow; opacity: 0; }
+        .btn-style { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        #arena-ball { height: 220px; background: #000; position: relative; border-radius: 15px; border: 1px solid #333; overflow: hidden; }
+        #ball-target { width: 45px; height: 45px; background: yellow; border-radius: 50%; position: absolute; cursor: pointer; display: none; box-shadow: 0 0 20px yellow; opacity: 0; }
+
+        .close-x { position: absolute; left: 15px; top: 10px; font-size: 30px; cursor: pointer; color: white; }
     </style>
 </head>
-<body onclick="startAudioSystem()">
+<body onclick="setupAudio()">
+
+    <div class="bg-effects"></div>
 
     <div class="header-box">
         <h1>🎮 BRSMAYKA PRO</h1>
-        <div class="counter-container">
+        <div class="counter-pill">
             <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
         </div>
     </div>
 
     <div class="container">
-        <div class="game-card" onclick="launchGame('xo')">
+        <div class="game-card" onclick="runGame('xo')">
             <div style="font-size: 40px;">❌</div>
             <h3>تحدي X-O</h3>
-            <button class="btn-action">العب</button>
+            <button class="btn-style">العب</button>
         </div>
 
-        <div class="game-card" onclick="launchGame('ball')">
+        <div class="game-card" onclick="runGame('ball')">
             <div style="font-size: 40px;">👻</div>
             <h3>الكرة الشبح</h3>
-            <button class="btn-action">العب</button>
+            <button class="btn-style">العب</button>
         </div>
 
-        <div class="game-card" onclick="launchGame('memory')">
+        <div class="game-card" onclick="runGame('mem')">
             <div style="font-size: 40px;">🧠</div>
             <h3>الذاكرة</h3>
-            <button class="btn-action">العب</button>
+            <button class="btn-style">العب</button>
         </div>
 
-        <div class="game-card" onclick="launchGame('speed')">
+        <div class="game-card" onclick="runGame('tap')">
             <div style="font-size: 40px;">⚡</div>
             <h3>تحدي النقر</h3>
-            <button class="btn-action">العب</button>
+            <button class="btn-style">العب</button>
         </div>
     </div>
 
-    <div id="mainModal" class="modal">
+    <div id="gameModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="terminateGame()">&times;</span>
-            <div id="screen-game"></div>
-            <button id="retryBtn" class="btn-action" style="display:none; background:#ff7300;">إعادة المحاولة 🔄</button>
+            <span class="close-x" onclick="exitGame()">&times;</span>
+            <div id="game-viewport"></div>
+            <button id="retryButton" class="btn-style" style="display:none; background:#ff7300;">إعادة المحاولة 🔄</button>
         </div>
     </div>
 
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
 
     <script>
-        let audioContext;
-        function startAudioSystem() { if(!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)(); }
-        function beep(freq) { if(audioContext) { const o = audioContext.createOscillator(); const g = audioContext.createGain(); o.frequency.value = freq; o.connect(g); g.connect(audioContext.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.1); o.stop(audioContext.currentTime + 0.1); } }
+        let aCtx;
+        function setupAudio() { if(!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        function playTone(f) { if(aCtx) { const o = aCtx.createOscillator(); const g = aCtx.createGain(); o.frequency.value = f; o.connect(g); g.connect(aCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.00001, aCtx.currentTime + 0.1); o.stop(aCtx.currentTime + 0.1); } }
 
-        function launchGame(type) {
-            startAudioSystem();
-            document.getElementById('mainModal').style.display = "block";
-            document.getElementById('retryBtn').style.display = "none";
-            if(type === 'xo') initXO();
-            else if(type === 'ball') initBall();
-            else if(type === 'memory') initMemory();
-            else if(type === 'speed') initSpeed();
+        function runGame(mode) {
+            setupAudio();
+            document.getElementById('gameModal').style.display = "block";
+            document.getElementById('retryButton').style.display = "none";
+            const vp = document.getElementById('game-viewport');
+            
+            if(mode === 'xo') startXO(vp);
+            else if(mode === 'ball') startBall(vp);
+            else if(mode === 'mem') startMem(vp);
+            else if(mode === 'tap') startTap(vp);
         }
 
-        // --- X-O ---
-        function initXO() {
-            let board = ["","","","","","","","",""], active = true;
-            const screen = document.getElementById('screen-game');
+        function startXO(vp) {
+            let b = ["","","","","","","","",""], live = true;
             const draw = () => {
-                screen.innerHTML = `<h3>X-O (أزرق - أحمر)</h3><div class="grid-xo">${board.map((v,i)=>`<div class="cell cell-xo ${v.toLowerCase()}" onclick="handleXOMove(${i})">${v}</div>`).join('')}</div><h2 id="win-status"></h2>`;
+                vp.innerHTML = `<h3>X-O (أزرق - أحمر)</h3><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">${b.map((v,i)=>`<div class="cell cell-xo ${v.toLowerCase()}" onclick="handleXO(${i})">${v}</div>`).join('')}</div><h2 id="st"></h2>`;
             };
-            window.handleXOMove = (i) => {
-                if(board[i] === "" && active) {
-                    board[i] = "X"; beep(600);
-                    if(!checkFinal(board)) setTimeout(robotTurn, 400);
+            window.handleXO = (i) => {
+                if(b[i]==="" && live) {
+                    b[i]="X"; playTone(600);
+                    if(!check(b)) setTimeout(robot, 400);
                     draw();
                 }
             };
-            const robotTurn = () => {
-                let empty = board.map((v,i)=> v===""?i:null).filter(v=>v!==null);
-                if(empty.length > 0 && active) { board[empty[Math.floor(Math.random()*empty.length)]]="O"; beep(400); checkFinal(board); draw(); }
+            const robot = () => {
+                let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+                if(e.length>0 && live) { b[e[Math.floor(Math.random()*e.length)]]="O"; playTone(400); check(b); draw(); }
             };
-            const checkFinal = (b) => {
-                const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-                for(let l of lines) { if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[0]]===b[l[2]]) { active = false; document.getElementById('win-status').innerText = b[l[0]]==="X" ? "فاز الأحمر! 🔥" : "فاز الأزرق! 🤖"; document.getElementById('retryBtn').style.display = "inline-block"; document.getElementById('retryBtn').onclick = initXO; return true; } }
-                if(!b.includes("")) { document.getElementById('win-status').innerText = "تعادل! 🤝"; document.getElementById('retryBtn').style.display = "inline-block"; return true; }
+            const check = (x) => {
+                const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+                for(let p of w) { if(x[p[0]] && x[p[0]]===x[p[1]] && x[p[0]]===x[p[2]]) { live=false; document.getElementById('st').innerText = x[p[0]]==="X"?"فزت! 🔥":"خسرت! 🤖"; document.getElementById('retryButton').style.display="block"; document.getElementById('retryButton').onclick=()=>startXO(vp); return true; } }
+                if(!x.includes("")) { live=false; document.getElementById('st').innerText="تعادل! 🤝"; document.getElementById('retryButton').style.display="block"; return true; }
                 return false;
             };
             draw();
         }
 
-        // --- الكرة الشبح ---
-        let ballInterval;
-        function initBall() {
-            let score = 0;
-            document.getElementById('screen-game').innerHTML = `<h3>اصطد الشبح الأصفر</h3><div id="arena-ball"><div id="ball-target" onclick="catchBall()"></div></div><h2>النقاط: <span id="pts-count">0</span></h2>`;
-            const ball = document.getElementById('ball-target');
-            window.catchBall = () => { score++; document.getElementById('pts-count').innerText = score; beep(800); resetBall(); };
-            const resetBall = () => { clearTimeout(ballInterval); ball.style.display = "block"; ball.style.opacity = "1"; ball.style.top = Math.random()*150+"px"; ball.style.left = Math.random()*300+"px"; setTimeout(() => { ball.style.opacity = "0"; }, 600); ballInterval = setTimeout(resetBall, 1600); };
-            resetBall();
+        let ballTimer;
+        function startBall(vp) {
+            let s = 0; vp.innerHTML = `<h3>صيد الشبح الأصفر</h3><div id="arena-ball"><div id="ball-target" onclick="popBall()"></div></div><h2>النقاط: <span id="score">0</span></h2>`;
+            const t = document.getElementById('ball-target');
+            window.popBall = () => { s++; document.getElementById('score').innerText=s; playTone(800); move(); };
+            const move = () => { clearTimeout(ballTimer); t.style.display="block"; t.style.opacity="1"; t.style.top=Math.random()*170+"px"; t.style.left=Math.random()*300+"px"; setTimeout(()=>t.style.opacity="0", 500); ballTimer=setTimeout(move, 1500); };
+            move();
         }
 
-        // --- الذاكرة ---
-        function initMemory() {
+        function startMem(vp) {
             const icons = ['🍎','🍎','🍌','🍌','🍇','🍇','🍒','🍒','🥝','🥝','🍍','🍍'];
-            let shuffled = icons.sort(() => Math.random() - 0.5);
-            let selected = [];
-            const screen = document.getElementById('screen-game');
-            screen.innerHTML = `<h3>طابق الفواكه!</h3><div class="grid-memory"></div>`;
-            const grid = screen.querySelector('.grid-memory');
-            shuffled.forEach((icon, i) => {
-                let cell = document.createElement('div');
-                cell.className = 'cell cell-mem';
-                cell.onclick = () => {
-                    if(selected.length < 2 && !cell.innerText) {
-                        cell.innerText = icon; selected.push(cell);
-                        if(selected.length === 2) {
-                            if(selected[0].innerText === selected[1].innerText) { beep(700); selected = []; }
-                            else { setTimeout(() => { selected[0].innerText = ''; selected[1].innerText = ''; selected = []; }, 500); }
-                        }
+            let shuf = icons.sort(()=>Math.random()-0.5), sel = [];
+            vp.innerHTML = `<h3>طابق الفواكه!</h3><div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;"></div>`;
+            const g = vp.querySelector('div');
+            shuf.forEach(icon => {
+                let c = document.createElement('div'); c.className='cell cell-mem';
+                c.onclick = () => {
+                    if(sel.length<2 && !c.innerText) {
+                        c.innerText=icon; sel.push(c);
+                        if(sel.length===2) { if(sel[0].innerText===sel[1].innerText){playTone(700); sel=[];} else {setTimeout(()=>{sel[0].innerText=''; sel[1].innerText=''; sel=[];}, 400);} }
                     }
                 };
-                grid.appendChild(cell);
+                g.appendChild(c);
             });
         }
 
-        // --- تحدي النقر ---
-        function initSpeed() {
-            let count = 0, time = 5;
-            const screen = document.getElementById('screen-game');
-            screen.innerHTML = `<h3>اضغط بأسرع ما يمكن!</h3><h1 id="timer">5</h1><button class="btn-action" id="clicker" style="width:100%; height:100px; font-size:40px;">إبدأ!</button><h2>النقاط: <span id="sc">0</span></h2>`;
-            const btn = document.getElementById('clicker');
-            btn.onclick = () => {
-                if(time === 5) {
-                    let itv = setInterval(() => {
-                        time--; document.getElementById('timer').innerText = time;
-                        if(time <= 0) { clearInterval(itv); btn.disabled = true; alert("انتهى الوقت! نتيجتك: " + count); terminateGame(); }
-                    }, 1000);
-                }
-                count++; document.getElementById('sc').innerText = count; beep(500);
+        function startTap(vp) {
+            let c=0, t=5; vp.innerHTML = `<h3>أسرع نقرات في 5 ثواني</h3><h1 id="tm">5</h1><button class="btn-style" id="tp" style="height:80px; font-size:25px;">إبدأ!</button><h2>النقاط: <span id="cc">0</span></h2>`;
+            const b = document.getElementById('tp');
+            b.onclick = () => {
+                if(t===5) { let i = setInterval(()=>{t--; document.getElementById('tm').innerText=t; if(t<=0){clearInterval(i); b.disabled=true; alert("انتهى! النتيجة: "+c); exitGame();}},1000); }
+                c++; document.getElementById('cc').innerText=c; playTone(500);
             };
         }
 
-        function terminateGame() {
-            clearTimeout(ballInterval);
-            document.getElementById('mainModal').style.display = "none";
-        }
+        function exitGame() { clearTimeout(ballTimer); document.getElementById('gameModal').style.display = "none"; }
     </script>
 </body>
 </html>
