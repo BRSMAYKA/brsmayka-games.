@@ -96,10 +96,56 @@
         // --- الألعاب الأربعة الجديدة ---
 
         function loadMath(v) {
-            let a=Math.floor(Math.random()*20), b=Math.floor(Math.random()*20), res=a+b, score=0, t=10;
-            v.innerHTML=`<h3>أسرع حساب!</h3><h1 id="mtm">10</h1><h2>${a} + ${b} = ?</h2><input type="number" id="ans" style="width:80%; padding:10px; border-radius:10px; text-align:center; font-size:20px;"><button class="btn" onclick="checkMath()">تحقق</button>`;
-            timerInt = setInterval(()=>{ t--; document.getElementById('mtm').innerText=t; if(t<=0){ clearInterval(timerInt); showResult("انتهى الوقت! 🤖", "الروبوت أسرع في الحساب", false); } },1000);
-            window.checkMath=()=>{ if(parseInt(document.getElementById('ans').value)===res) { clearInterval(timerInt); showResult("عبقري! 🎓", "إجابة صحيحة وسريعة", true); } else { sfx(150,0.3); } };
+            let a = Math.floor(Math.random() * 20);
+            let b = Math.floor(Math.random() * 20);
+            let res = a + b;
+            let t = 10;
+            
+            v.innerHTML = `
+                <h3>أسرع حساب!</h3>
+                <h1 id="mtm" style="color:#ffbb00;">10</h1>
+                <h2 style="font-size:2rem; margin:15px 0;">${a} + ${b} = ؟</h2>
+                <input type="number" id="ansInput" placeholder="ادخل الناتج" 
+                       style="width:80%; padding:15px; border-radius:15px; border:2px solid #0088ff; text-align:center; font-size:22px; margin-bottom:15px; background:#222; color:white;">
+                <button class="btn" id="checkBtn" style="height:50px; font-size:1.2rem;">تحقق الآن ✅</button>
+            `;
+
+            const inputField = document.getElementById('ansInput');
+            const checkBtn = document.getElementById('checkBtn');
+            
+            // جعل المؤشر في خانة الكتابة تلقائياً
+            setTimeout(() => inputField.focus(), 100);
+
+            // عداد الوقت
+            timerInt = setInterval(() => {
+                t--;
+                const timerDisplay = document.getElementById('mtm');
+                if(timerDisplay) timerDisplay.innerText = t;
+                if (t <= 0) {
+                    clearInterval(timerInt);
+                    showResult("انتهى الوقت! 🤖", `الإجابة الصحيحة كانت ${res}`, false);
+                }
+            }, 1000);
+
+            // برمجة زر التحقق المباشر
+            checkBtn.onclick = () => {
+                let userAns = parseInt(inputField.value);
+                if (userAns === res) {
+                    clearInterval(timerInt);
+                    showResult("عبقري حساب! 🎓", "إجابة صحيحة في وقت قياسي", true);
+                } else if (inputField.value === "") {
+                    sfx(150, 0.2); // صوت تنبيه لو الخانة فارغة
+                } else {
+                    sfx(150, 0.5); // صوت خطأ
+                    inputField.value = ""; // مسح الخانة
+                    inputField.placeholder = "خطأ! حاول ثانية";
+                }
+            };
+
+            // السماح بالضغط على "Enter" من الكيبورد للإرسال
+            inputField.onkeyup = (e) => {
+                if (e.key === "Enter") checkBtn.click();
+            };
         }
 
         function loadColor(v) {
