@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA AI - Ultra FX 🚀</title>
+    <title>BRSMAYKA AI - Ultra FX & Balloons 🎈</title>
     <style>
         :root { --primary: #0088ff; --secondary: #ff3333; --bg: #050505; }
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; overflow: hidden; }
         
-        /* مربع النقاط الثابت */
+        /* Persistent Score Box */
         #persistent-score {
             position: fixed; top: 15px; left: 15px;
             background: rgba(0, 136, 255, 0.2);
@@ -20,24 +20,39 @@
             backdrop-filter: blur(5px);
         }
 
-        /* تأثير النقاط المكتسبة والرموز */
+        /* FX Layer (Emoji & Points) */
         #fx-layer {
             display: none; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 20000; pointer-events: none;
             flex-direction: column; align-items: center;
         }
-
         .fx-emoji { font-size: 6rem; filter: drop-shadow(0 0 20px var(--primary)); animation: bounce 0.6s infinite alternate; }
         .fx-points { font-size: 3rem; font-weight: 900; color: #00ff88; text-shadow: 0 0 20px #00ff88; margin-top: 10px; }
 
+        /* Balloons Styling */
+        .balloon {
+            position: fixed; bottom: -100px;
+            width: 40px; height: 50px;
+            border-radius: 50%;
+            z-index: 15000;
+            animation: rise 4s ease-in forwards;
+        }
+        .balloon::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%;
+            width: 2px; height: 20px; background: rgba(255,255,255,0.3);
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
         @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.2); } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
         .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle, #111, #050505); }
         .header-box { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 25px; }
         .header-box h1 { font-size: 2.5rem; color: var(--primary); text-shadow: 0 0 20px var(--primary); margin: 0; }
-
         .counter-wrapper { background: rgba(255, 255, 255, 0.05); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--primary); display: inline-block; }
 
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
@@ -46,7 +61,6 @@
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; backdrop-filter: blur(10px); }
         .modal-content { background: #111; margin: 5vh auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--primary); position: relative; }
-        
         #result-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; border-radius: 23px; }
         .win-text { color: #00ff88; font-size: 2.2rem; }
         .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 80%; margin-top: 10px; }
@@ -57,7 +71,6 @@
 </head>
 <body onload="loadGlobalScore()" onclick="initAudio()">
     <div class="bg-layer"></div>
-    
     <div id="persistent-score">Score: <span id="total-points">0</span></div>
 
     <div id="fx-layer">
@@ -107,19 +120,34 @@
             document.getElementById('total-points').innerText = globalPoints;
         }
 
+        // دالة إنشاء البالونات
+        function createBalloons() {
+            const colors = ['#ff3333', '#0088ff', '#00ff88', '#ffcc00', '#ff00ff'];
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const b = document.createElement('div');
+                    b.className = 'balloon';
+                    b.style.left = Math.random() * 100 + 'vw';
+                    b.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    b.style.boxShadow = `inset -5px -5px 10px rgba(0,0,0,0.3)`;
+                    document.body.appendChild(b);
+                    setTimeout(() => b.remove(), 4000);
+                }, i * 150);
+            }
+        }
+
         function triggerWinFX(game) {
             const fxLayer = document.getElementById('fx-layer');
             const fxEmoji = document.getElementById('fx-emoji');
             const fxText = document.getElementById('fx-text');
-            const pts = pointsMap[game];
-
+            
             fxEmoji.innerText = emojiMap[game];
-            fxText.innerText = `+${pts} Points`;
+            fxText.innerText = `+${pointsMap[game]} Points`;
             
             fxLayer.style.display = 'flex';
             fxLayer.style.animation = 'none';
-            
-            // يختفي بعد 5 ثوانٍ
+            createBalloons(); // تشغيل البالونات هنا
+
             setTimeout(() => {
                 fxLayer.style.animation = 'fadeOut 1s forwards';
                 setTimeout(() => { fxLayer.style.display = 'none'; }, 1000);
@@ -142,9 +170,7 @@
                 document.getElementById('total-points').innerText = globalPoints;
                 triggerWinFX(currentMode);
                 sfx(800, 0.3);
-            } else {
-                sfx(100, 0.5);
-            }
+            } else { sfx(100, 0.5); }
             overlay.style.display = 'flex';
         }
 
