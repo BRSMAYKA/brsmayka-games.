@@ -13,15 +13,19 @@
         .header-box h1 { font-size: 2rem; color: var(--primary); text-shadow: 0 0 15px var(--primary); }
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
         .game-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); width: 160px; border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.3s; }
+        .game-card:hover { border-color: var(--primary); transform: scale(1.05); }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; backdrop-filter: blur(10px); }
         .modal-content { background: #111; margin: 10vh auto; width: 85%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--primary); position: relative; }
         #result-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; border-radius: 23px; }
         .win-text { color: #00ff88; font-size: 2.2rem; text-shadow: 0 0 20px #00ff88; }
         .lose-text { color: #ff3333; font-size: 2.2rem; text-shadow: 0 0 20px #ff3333; }
-        .cell { background: #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; height: 70px; font-size: 30px; }
+        .cell { background: #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; height: 70px; font-size: 30px; border: 1px solid #333; }
         .btn { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 80%; margin-top: 15px; }
         #arena { height: 220px; background: #000; position: relative; border-radius: 15px; border: 1px solid #333; overflow: hidden; }
-        #ball { width: 45px; height: 45px; background: yellow; border-radius: 50%; position: absolute; cursor: pointer; display: none; box-shadow: 0 0 20px yellow; }
+        #ball { width: 45px; height: 45px; background: yellow; border-radius: 50%; position: absolute; cursor: pointer; display: none; box-shadow: 0 0 20px yellow; z-index: 10; }
+        
+        @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} 100%{transform:translateX(0)} }
+        .shake { animation: shake 0.2s ease-in-out 2; border-color: red !important; }
     </style>
 </head>
 <body onclick="initAudio()">
@@ -35,14 +39,14 @@
 
     <div class="container">
         <div class="game-card" onclick="start('xo')"> ❌ <h3>X-O</h3> </div>
-        <div class="game-card" onclick="start('ball')"> 👻 <h3>الشبح (20)</h3> </div>
+        <div class="game-card" onclick="start('ball')"> 👻 <h3>الشبح</h3> </div>
         <div class="game-card" onclick="start('mem')"> 🧠 <h3>الذاكرة</h3> </div>
-        <div class="game-card" onclick="start('tap')"> ⚡ <h3>السرعة (25)</h3> </div>
+        <div class="game-card" onclick="start('tap')"> ⚡ <h3>السرعة</h3> </div>
     </div>
 
     <div id="gameModal" class="modal">
-        <div class="modal-content">
-            <span style="position:absolute; left:20px; top:10px; font-size:30px; cursor:pointer; color:white;" onclick="stop()">&times;</span>
+        <div class="modal-content" id="m-box">
+            <span style="position:absolute; left:20px; top:10px; font-size:30px; cursor:pointer; color:white; z-index:1000;" onclick="stop()">&times;</span>
             <div id="result-overlay">
                 <h1 id="result-msg"></h1>
                 <p id="result-details" style="color:#aaa;"></p>
@@ -54,7 +58,7 @@
 
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
     <script>
-        let ctx;
+        let ctx, currentMode, score = 0;
         function initAudio() { if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); }
         
         function sfx(f, d = 0.1) { 
@@ -71,6 +75,114 @@
 
         function showResult(msg, details, isWin) {
             const overlay = document.getElementById('result-overlay');
-            document.getElementById('result-msg').innerText = msg;
-            document.getElementById('result-msg').className = isWin ? 'win-text' : 'lose-text';
-            document.getElemen
+            const resMsg = document.getElementById('result-msg');
+            resMsg.innerText = msg;
+            resMsg.className = isWin ? 'win-text' : 'lose-text';
+            document.getElementById('result-details').innerText = details;
+            overlay.style.display = 'flex';
+            isWin ? playWinSound() : playLoseSound();
+        }
+
+        function hideResult() {
+            document.getElementById('result-overlay').style.display = 'none';
+            start(currentMode);
+        }
+
+        function stop() {
+            document.getElementById('gameModal').style.display = 'none';
+        }
+
+        function triggerError() {
+            const box = document.getElementById('m-box');
+            box.classList.add('shake');
+            sfx(150, 0.2);
+            setTimeout(() => box.classList.remove('shake'), 400);
+        }
+
+        function start(mode) {
+            currentMode = mode;
+            score = 0;
+            document.getElementById('gameModal').style.display = 'block';
+            const view = document.getElementById('game-view');
+            view.innerHTML = '';
+
+            if(mode === 'tap') {
+                view.innerHTML = `<h2>اضغط بسرعة!</h2><button class="btn" style="height:100px; font-size:2rem;" onclick="score++; this.innerText=score; if(score>=25) showResult('فوز!','انت سريع جداً', true)">0</button>`;
+            } 
+            else if(mode === 'ball') {
+                view.innerHTML = `<div id="arena"><div id="ball">👻</div></div><p>اصطد الشبح 20 مرة!</p>`;
+                const ball = document.getElementById('ball');
+                ball.style.display = 'block';
+                const move = () => {
+                    ball.style.left = Math.random() * 80 + '%';
+                    ball.style.top = Math.random() * 70 + '%';
+                };
+                move();
+                ball.onclick = () => {
+                    score++; sfx(600); move();
+                    if(score >= 20) showResult('قناص!', 'تم اصطياد الأشباح', true);
+                };
+            }
+            else if(mode === 'xo') {
+                let board = Array(9).fill('');
+                view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;" id="xo-grid"></div>`;
+                const grid = document.getElementById('xo-grid');
+                for(let i=0; i<9; i++) {
+                    const c = document.createElement('div');
+                    c.className = 'cell';
+                    c.onclick = () => {
+                        if(board[i] === '') {
+                            board[i] = 'X'; c.innerText = 'X'; sfx(400);
+                            if(!checkWin(board)) setTimeout(cpuMove, 300);
+                        }
+                    };
+                    grid.appendChild(c);
+                }
+                const cpuMove = () => {
+                    let empty = board.map((v,i) => v==='' ? i : null).filter(v => v!==null);
+                    if(empty.length > 0) {
+                        let move = empty[Math.floor(Math.random()*empty.length)];
+                        board[move] = 'O';
+                        grid.children[move].innerText = 'O'; grid.children[move].style.color = 'red';
+                        checkWin(board);
+                    }
+                };
+                const checkWin = (b) => {
+                    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+                    for(let w of wins) {
+                        if(b[w[0]] && b[w[0]]===b[w[1]] && b[w[0]]===b[w[2]]) {
+                            showResult(b[w[0]]==='X'?'فزت!':'خسرت!', '', b[w[0]]==='X'); return true;
+                        }
+                    }
+                    if(!b.includes('')) { showResult('تعادل!', '', true); return true; }
+                    return false;
+                };
+            }
+            else if(mode === 'mem') {
+                let nums = [1,1,2,2,3,3,4,4].sort(() => Math.random() - 0.5);
+                let flipped = [];
+                view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>`;
+                const grid = view.querySelector('div');
+                nums.forEach((n, i) => {
+                    const c = document.createElement('div');
+                    c.className = 'cell'; c.innerText = '?';
+                    c.onclick = () => {
+                        if(flipped.length < 2 && c.innerText === '?') {
+                            c.innerText = n; flipped.push({c, n});
+                            if(flipped.length === 2) {
+                                if(flipped[0].n === flipped[1].n) {
+                                    score++; flipped = []; sfx(800);
+                                    if(score === 4) showResult('عبقري!', 'ذاكرة قوية', true);
+                                } else {
+                                    setTimeout(() => { flipped[0].c.innerText = '?'; flipped[1].c.innerText = '?'; flipped = []; triggerError(); }, 500);
+                                }
+                            }
+                        }
+                    };
+                    grid.appendChild(c);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
