@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA AI - Pro XO Levels 🚀</title>
+    <title>BRSMAYKA AI - 2026 Gaming Edition 🚀</title>
     <style>
         :root { --primary: #0088ff; --secondary: #ff3333; --bg: #050505; }
         * { box-sizing: border-box; touch-action: manipulation; }
@@ -28,13 +28,7 @@
         .fx-emoji { font-size: 6rem; filter: drop-shadow(0 0 20px var(--primary)); animation: bounce 0.6s infinite alternate; }
         .fx-points { font-size: 3rem; font-weight: 900; color: #00ff88; text-shadow: 0 0 20px #00ff88; margin-top: 10px; }
 
-        .balloon {
-            position: fixed; bottom: -100px;
-            width: 40px; height: 50px;
-            border-radius: 50%;
-            z-index: 15000;
-            animation: rise 4s ease-in forwards;
-        }
+        .balloon { position: fixed; bottom: -100px; width: 40px; height: 50px; border-radius: 50%; z-index: 15000; animation: rise 4s ease-in forwards; }
 
         @keyframes rise { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120vh); opacity: 0; } }
         @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.2); } }
@@ -42,7 +36,9 @@
 
         .header-box { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 25px; }
         .header-box h1 { font-size: 2.5rem; color: var(--primary); text-shadow: 0 0 20px var(--primary); margin: 0; }
-        .counter-wrapper { background: rgba(255, 255, 255, 0.05); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--primary); display: inline-block; }
+        .tag-2026 { background: var(--secondary); color: white; padding: 2px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+
+        .counter-wrapper { background: rgba(255, 255, 255, 0.05); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--primary); display: inline-block; margin-top: 10px; }
 
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
         .game-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); width: 130px; border-radius: 20px; padding: 15px; cursor: pointer; transition: 0.3s; }
@@ -56,10 +52,11 @@
         .lose-text { color: var(--secondary); font-size: 2.2rem; }
         
         .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 80%; margin-top: 10px; }
-        .lvl-btn { padding: 5px 10px; margin: 2px; border-radius: 5px; border: 1px solid var(--primary); background: transparent; color: white; cursor: pointer; font-size: 0.8rem; }
-        .lvl-btn.active { background: var(--primary); }
-
         .cell { background: #1a1a1a; border-radius: 12px; display: flex; align-items: center; justify-content: center; height: 75px; font-size: 35px; border: 1px solid #333; cursor: pointer; color: var(--primary); }
+        
+        .riddle-text { font-size: 1.2rem; line-height: 1.5; margin: 20px 0; color: #ddd; }
+        .riddle-input { width: 90%; padding: 12px; border-radius: 10px; border: 1px solid var(--primary); background: #222; color: white; text-align: center; font-size: 1rem; margin-bottom: 10px; outline: none; }
+
         #timer-box { width: 100%; height: 8px; background: #222; border-radius: 4px; margin-bottom: 15px; overflow: hidden; display: none; }
         #timer-bar { height: 100%; width: 100%; background: var(--secondary); transition: linear; }
     </style>
@@ -73,6 +70,7 @@
     </div>
 
     <div class="header-box">
+        <span class="tag-2026">2026 EDITION</span>
         <h1>🎮 BRSMAYKA AI</h1>
         <div class="counter-wrapper">
             <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
@@ -81,7 +79,8 @@
 
     <div class="container">
         <div class="game-card" onclick="start('xo')"> ❌ <h3>Tic-Tac-Toe</h3> </div>
-        <div class="game-card" onclick="start('stop5')"> ⏱️ <h3>Stop at 5s</h3> </div>
+        <div class="game-card" onclick="start('riddle')"> 🧩 <h3>Riddles</h3> </div>
+        <div class="game-card" onclick="start('stop5')"> ⏱️ <h3>5s Challenge</h3> </div>
         <div class="game-card" onclick="start('ball')"> 👻 <h3>Ghost Hunt</h3> </div>
         <div class="game-card" onclick="start('mem')"> 🧠 <h3>Memory</h3> </div>
         <div class="game-card" onclick="start('tap')"> ⚡ <h3>Speed Tap</h3> </div>
@@ -94,7 +93,7 @@
             <div id="result-overlay">
                 <h1 id="result-msg"></h1>
                 <p id="result-details" style="color:#aaa;"></p>
-                <button class="btn" onclick="hideResult()">Continue 🔄</button>
+                <button class="btn" onclick="hideResult()">Play Again 🔄</button>
             </div>
             <div id="game-view"></div>
         </div>
@@ -103,11 +102,20 @@
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
 
     <script>
-        let ctx, currentMode, score = 0, gameTimer, timeLeft, stopInterval, xoLevel = 'easy';
+        let ctx, currentMode, score = 0, gameTimer, timeLeft, stopInterval;
         let globalPoints = 0;
 
-        const pointsMap = { 'xo': 15, 'stop5': 20, 'ball': 10, 'mem': 15, 'tap': 5 };
-        const emojiMap = { 'xo': '❌', 'stop5': '⏱️', 'ball': '👻', 'mem': '🧠', 'tap': '⚡' };
+        const pointsMap = { 'xo': 15, 'riddle': 30, 'stop5': 20, 'ball': 10, 'mem': 15, 'tap': 5 };
+        const emojiMap = { 'xo': '❌', 'riddle': '🧩', 'stop5': '⏱️', 'ball': '👻', 'mem': '🧠', 'tap': '⚡' };
+
+        // Simple English Riddles
+        const riddles = [
+            { q: "What has keys but can't open locks?", a: "piano" },
+            { q: "What has to be broken before you can use it?", a: "egg" },
+            { q: "What gets wetter the more it dries?", a: "towel" },
+            { q: "What has one eye but can't see?", a: "needle" },
+            { q: "The more of this there is, the less you see. What is it?", a: "darkness" }
+        ];
 
         function loadGlobalScore() {
             globalPoints = parseInt(localStorage.getItem('brsmayka_score')) || 0;
@@ -163,16 +171,6 @@
         function hideResult() { document.getElementById('result-overlay').style.display = 'none'; start(currentMode); }
         function stop() { clearInterval(gameTimer); clearInterval(stopInterval); document.getElementById('gameModal').style.display = 'none'; }
 
-        function startTimer(seconds) {
-            timeLeft = 100; document.getElementById('timer-box').style.display = 'block';
-            clearInterval(gameTimer);
-            gameTimer = setInterval(() => {
-                timeLeft -= (100 / (seconds * 10)); 
-                document.getElementById('timer-bar').style.width = timeLeft + '%';
-                if(timeLeft <= 0) showResult('Time Up!', '💀', false);
-            }, 100);
-        }
-
         function start(mode) {
             currentMode = mode; score = 0;
             document.getElementById('gameModal').style.display = 'block';
@@ -180,129 +178,54 @@
             const view = document.getElementById('game-view');
             view.innerHTML = '';
 
-            if(mode === 'xo') {
+            if(mode === 'riddle') {
+                const r = riddles[Math.floor(Math.random() * riddles.length)];
                 view.innerHTML = `
-                    <div style="margin-bottom:10px;">
-                        <button class="lvl-btn ${xoLevel==='easy'?'active':''}" onclick="xoLevel='easy'; start('xo')">Easy</button>
-                        <button class="lvl-btn ${xoLevel==='med'?'active':''}" onclick="xoLevel='med'; start('xo')">Medium</button>
-                        <button class="lvl-btn ${xoLevel==='hard'?'active':''}" onclick="xoLevel='hard'; start('xo')">Impossible</button>
-                    </div>
-                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;" id="xo-grid"></div>`;
+                    <h3>Riddle Challenge 🧩</h3>
+                    <p class="riddle-text">${r.q}</p>
+                    <input type="text" id="riddle-ans" class="riddle-input" placeholder="Type answer here...">
+                    <button class="btn" onclick="checkRiddle('${r.a}')">Submit</button>
+                `;
+            } else if(mode === 'xo') {
+                view.innerHTML = `<h3>Tic-Tac-Toe</h3><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;" id="xo-grid"></div>`;
                 let board = Array(9).fill('');
                 for(let i=0; i<9; i++) {
                     const c = document.createElement('div'); c.className = 'cell';
-                    c.onclick = () => { 
-                        if(board[i] === '' && !document.getElementById('result-overlay').style.display.includes('flex')) { 
-                            board[i] = 'X'; c.innerText = 'X'; sfx(400);
-                            if(!checkXO(board)) setTimeout(() => aiMoveXO(board), 300); 
-                        } 
-                    };
+                    c.onclick = () => { if(board[i] === '') { board[i] = 'X'; c.innerText = 'X'; checkWinXO(board); } };
                     document.getElementById('xo-grid').appendChild(c);
                 }
-                startTimer(15);
             } else if(mode === 'stop5') {
-                view.innerHTML = `<h3>Stop at 5.00s!</h3><h1 id="stop-clock" style="font-size:3rem">0.00</h1><button id="stop-btn" class="btn" style="height:80px;">STOP!</button>`;
+                view.innerHTML = `<h3>Stop at 5.00s!</h3><h1 id="stop-clock" style="font-size:3rem;">0.00</h1><button id="stop-btn" class="btn" style="height:80px;">STOP</button>`;
                 let count = 0;
-                stopInterval = setInterval(() => { count += 0.01; document.getElementById('stop-clock').innerText = count.toFixed(2); if(count > 6) showResult('Late!', '', false); }, 10);
-                document.getElementById('stop-btn').onclick = () => { clearInterval(stopInterval); const d = Math.abs(5.00 - count); if(d < 0.2) showResult('Legend!', count.toFixed(2), true); else showResult('Off!', count.toFixed(2), false); };
+                stopInterval = setInterval(() => { count += 0.01; document.getElementById('stop-clock').innerText = count.toFixed(2); }, 10);
+                document.getElementById('stop-btn').onclick = () => { clearInterval(stopInterval); Math.abs(5 - count) < 0.2 ? showResult('Perfect!', count.toFixed(2), true) : showResult('Too Early/Late!', count.toFixed(2), false); };
             } else if(mode === 'ball') {
                 view.innerHTML = `<div style="height:200px; position:relative; background:#000; border-radius:15px; overflow:hidden;"><div id="ball" style="position:absolute; font-size:40px; cursor:pointer;">👻</div></div>`;
-                const ball = document.getElementById('ball'); const move = () => { ball.style.left = Math.random()*85+'%'; ball.style.top = Math.random()*75+'%'; }; move();
-                ball.onclick = () => { score++; move(); sfx(600); if(score >= 10) showResult('Exorcist!','🏆',true); };
-                startTimer(10);
+                const b = document.getElementById('ball'); const move = () => { b.style.left = Math.random()*80+'%'; b.style.top = Math.random()*70+'%'; }; move();
+                b.onclick = () => { score++; move(); if(score >= 10) showResult('Caught!', '10 Ghosts', true); };
             } else if(mode === 'tap') {
-                view.innerHTML = `<h3>Tap 25x!</h3><button id="tap-btn" class="btn" style="height:120px; font-size:3rem;" onclick="score++; document.getElementById('tap-btn').innerText=score; sfx(500); if(score>=25) showResult('Speed!','⚡',true)">0</button>`;
-                startTimer(8);
+                view.innerHTML = `<h3>Tap 25 Times!</h3><button id="tap-btn" class="btn" style="height:120px; font-size:3rem;" onclick="score++; document.getElementById('tap-btn').innerText=score; if(score>=25) showResult('Fast!','⚡',true)">0</button>`;
             } else if(mode === 'mem') {
                 let nums = [1,1,2,2,3,3,4,4].sort(() => Math.random() - 0.5); let f = [];
                 view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>`;
                 nums.forEach(n => {
                     const c = document.createElement('div'); c.className = 'cell'; c.innerText = '?';
-                    c.onclick = () => { if(f.length < 2 && c.innerText === '?') { c.innerText = n; f.push({c, n}); sfx(400); if(f.length === 2) { if(f[0].n === f[1].n) { score++; f = []; if(score === 4) showResult('Smart!','🧠',true); } else { setTimeout(() => { f[0].c.innerText = '?'; f[1].c.innerText = '?'; f = []; }, 500); } } } };
+                    c.onclick = () => { if(f.length < 2 && c.innerText === '?') { c.innerText = n; f.push({c, n}); if(f.length === 2) { if(f[0].n === f[1].n) { score++; f = []; if(score === 4) showResult('Genius!','🧠',true); } else { setTimeout(() => { f[0].c.innerText = '?'; f[1].c.innerText = '?'; f = []; }, 500); } } } };
                     view.querySelector('div').appendChild(c);
                 });
-                startTimer(20);
             }
         }
 
-        // ذكاء XO المتدرج
-        function aiMoveXO(b) {
-            let move;
-            const empty = b.map((v,i) => v==='' ? i : null).filter(v => v!==null);
-            if(empty.length === 0) return;
-
-            if(xoLevel === 'easy') {
-                move = empty[Math.floor(Math.random()*empty.length)];
-            } else if(xoLevel === 'med') {
-                move = findBestMove(b, 'O') || findBestMove(b, 'X') || empty[Math.floor(Math.random()*empty.length)];
-            } else {
-                move = minimax(b, 'O').index;
-            }
-
-            b[move] = 'O';
-            document.getElementById('xo-grid').children[move].innerText = 'O';
-            document.getElementById('xo-grid').children[move].style.color = 'var(--secondary)';
-            checkXO(b);
+        function checkRiddle(correct) {
+            const user = document.getElementById('riddle-ans').value.toLowerCase().trim();
+            if(user === correct) showResult('Correct!', 'Smart choice!', true);
+            else showResult('Wrong!', 'Try again!', false);
         }
 
-        function findBestMove(b, p) {
+        function checkWinXO(b) {
             const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            for(let w of wins) {
-                let count = w.filter(i => b[i]===p).length;
-                let empty = w.filter(i => b[i]==='');
-                if(count === 2 && empty.length === 1) return empty[0];
-            }
-            return null;
-        }
-
-        function minimax(newBoard, player) {
-            const availSpots = newBoard.map((v,i) => v==='' ? i : null).filter(v => v!==null);
-            if (checkWinSim(newBoard, 'X')) return {score: -10};
-            if (checkWinSim(newBoard, 'O')) return {score: 10};
-            if (availSpots.length === 0) return {score: 0};
-
-            const moves = [];
-            for (let i = 0; i < availSpots.length; i++) {
-                const move = {};
-                move.index = availSpots[i];
-                newBoard[availSpots[i]] = player;
-                if (player === 'O') move.score = minimax(newBoard, 'X').score;
-                else move.score = minimax(newBoard, 'O').score;
-                newBoard[availSpots[i]] = '';
-                moves.push(move);
-            }
-
-            let bestMove;
-            if (player === 'O') {
-                let bestScore = -10000;
-                for (let i = 0; i < moves.length; i++) {
-                    if (moves[i].score > bestScore) {
-                        bestScore = moves[i].score;
-                        bestMove = i;
-                    }
-                }
-            } else {
-                let bestScore = 10000;
-                for (let i = 0; i < moves.length; i++) {
-                    if (moves[i].score < bestScore) {
-                        bestScore = moves[i].score;
-                        bestMove = i;
-                    }
-                }
-            }
-            return moves[bestMove];
-        }
-
-        function checkWinSim(b, p) {
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(w => b[w[0]]===p && b[w[1]]===p && b[w[2]]===p);
-        }
-
-        function checkXO(b) {
-            if(checkWinSim(b, 'X')) { showResult('You Win!', '🚀', true); return true; }
-            if(checkWinSim(b, 'O')) { showResult('AI Wins!', '🤖', false); return true; }
-            if(!b.includes('')) { showResult('Draw!', '🤝', true); return true; }
-            return false;
+            for(let w of wins) if(b[w[0]] && b[w[0]]===b[w[1]] && b[w[0]]===b[w[2]]) { showResult('Winner!', '🏆', true); return; }
+            if(!b.includes('')) showResult('Draw!', '🤝', true);
         }
     </script>
 </body>
