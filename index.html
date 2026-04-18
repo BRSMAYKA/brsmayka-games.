@@ -40,7 +40,6 @@
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
         .game-card { background: #151515; border: 1px solid #333; width: 145px; border-radius: 20px; padding: 15px; cursor: pointer; transition: 0.3s; }
         .game-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 255, 204, 0.2); }
-        .game-card h3 { font-size: 1rem; margin: 10px 0 0; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; backdrop-filter: blur(10px); }
         .modal-content { background: #111; margin: 5vh auto; width: 92%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--primary); position: relative; min-height: 420px; display: flex; flex-direction: column; justify-content: center; }
@@ -50,16 +49,11 @@
         .lose-text { color: var(--secondary); font-size: 2rem; }
         
         .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 50px; cursor: pointer; font-weight: 800; width: 85%; margin-top: 15px; }
-        .cell { background: #1a1a1a; border-radius: 15px; display: flex; align-items: center; justify-content: center; height: 75px; font-size: 32px; border: 1px solid #333; cursor: pointer; color: var(--primary); }
-        
-        /* Math Dash Styles */
-        #math-q { font-size: 3rem; margin: 20px 0; font-weight: bold; }
-        .math-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
-        .opt-btn { background: #222; border: 1px solid #444; color: white; padding: 15px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; }
-        .opt-btn:hover { background: var(--primary); color: #000; }
+        .cell { background: #1a1a1a; border-radius: 15px; display: flex; align-items: center; justify-content: center; height: 75px; font-size: 32px; border: 1px solid #333; cursor: pointer; color: var(--primary); transition: 0.2s; }
+        .cell.flipped { background: #333; border-color: var(--primary); color: white; }
 
         #timer-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
-        #timer-bar-fill { width: 100%; height: 100%; background: var(--primary); transition: 0.1s linear; }
+        #timer-bar-fill { width: 100%; height: 100%; background: var(--primary); }
     </style>
 </head>
 <body onload="loadGlobalScore()">
@@ -80,11 +74,11 @@
     </div>
 
     <div class="container">
+        <div class="game-card" onclick="start('mem')"> 🧠 <h3>Memory IQ</h3> </div>
         <div class="game-card" onclick="start('math')"> ➗ <h3>Math Dash</h3> </div>
         <div class="game-card" onclick="start('xo')"> ❌ <h3>Tic-Tac-Toe</h3> </div>
         <div class="game-card" onclick="start('stop5')"> ⏱️ <h3>5s Master</h3> </div>
         <div class="game-card" onclick="start('ball')"> 👻 <h3>Ghost Hunt</h3> </div>
-        <div class="game-card" onclick="start('mem')"> 🧠 <h3>Memory IQ</h3> </div>
         <div class="game-card" onclick="start('tap')"> ⚡ <h3>Hyper Tap</h3> </div>
     </div>
 
@@ -104,9 +98,9 @@
 
     <script>
         let currentMode, score = 0, gameTimer, globalPoints = 0;
-        let mathAnswer, mathTime;
+        let flippedCards = [];
 
-        const pointsMap = { 'math': 20, 'xo': 15, 'stop5': 25, 'ball': 10, 'mem': 20, 'tap': 5 };
+        const pointsMap = { 'math': 20, 'xo': 15, 'stop5': 25, 'ball': 10, 'mem': 30, 'tap': 5 };
         const emojiMap = { 'math': '➗', 'xo': '❌', 'stop5': '⏱️', 'ball': '👻', 'mem': '🧠', 'tap': '⚡' };
 
         function loadGlobalScore() {
@@ -157,26 +151,51 @@
         function stop() { clearInterval(gameTimer); document.getElementById('gameModal').style.display = 'none'; }
 
         function start(mode) {
-            currentMode = mode; score = 0;
+            currentMode = mode; score = 0; flippedCards = [];
             clearInterval(gameTimer);
             document.getElementById('gameModal').style.display = 'block';
             const view = document.getElementById('game-view');
             view.innerHTML = '';
 
-            if(mode === 'math') {
+            if(mode === 'mem') {
+                const fruits = ['🍎', '🍎', '🍌', '🍌', '🍇', '🍇', '🍉', '🍉', '🍓', '🍓', '🍍', '🍍'].sort(() => Math.random() - 0.5);
+                view.innerHTML = `<h3>Match the Fruits!</h3><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;" id="mem-grid"></div>`;
+                fruits.forEach((fruit, index) => {
+                    const c = document.createElement('div');
+                    c.className = 'cell';
+                    c.innerText = '?';
+                    c.onclick = () => {
+                        if (flippedCards.length < 2 && !c.classList.contains('flipped')) {
+                            c.innerText = fruit;
+                            c.classList.add('flipped');
+                            flippedCards.push({ element: c, value: fruit });
+
+                            if (flippedCards.length === 2) {
+                                if (flippedCards[0].value === flippedCards[1].value) {
+                                    score++;
+                                    flippedCards = [];
+                                    if (score === 6) showResult('Perfect Memory!', 'You matched them all!', true);
+                                } else {
+                                    setTimeout(() => {
+                                        flippedCards[0].element.innerText = '?';
+                                        flippedCards[1].element.innerText = '?';
+                                        flippedCards[0].element.classList.remove('flipped');
+                                        flippedCards[1].element.classList.remove('flipped');
+                                        flippedCards = [];
+                                    }, 600);
+                                }
+                            }
+                        }
+                    };
+                    document.getElementById('mem-grid').appendChild(c);
+                });
+            } else if (mode === 'math') {
                 const a = Math.floor(Math.random()*15)+1;
                 const b = Math.floor(Math.random()*15)+1;
-                mathAnswer = a + b;
+                const mathAnswer = a + b;
                 const options = [mathAnswer, mathAnswer+2, mathAnswer-1, mathAnswer+5].sort(()=>Math.random()-0.5);
-                view.innerHTML = `<h3>Math Dash</h3><div id="timer-bar-bg"><div id="timer-bar-fill"></div></div><div id="math-q">${a} + ${b}</div><div class="math-options">${options.map(o => `<button class="opt-btn" onclick="checkMath(${o})">${o}</button>`).join('')}</div>`;
-                mathTime = 100;
-                gameTimer = setInterval(() => {
-                    mathTime -= 2;
-                    document.getElementById('timer-bar-fill').style.width = mathTime + '%';
-                    if(mathTime <= 0) showResult('TIME UP!','Be faster next time', false);
-                }, 100);
-            }
-            else if(mode === 'xo') {
+                view.innerHTML = `<h3>Math Dash</h3><div id="math-q" style="font-size:3rem; margin:20px;">${a} + ${b}</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">${options.map(o => `<button class="btn" style="width:100%" onclick="checkMath(${o}, ${mathAnswer})">${o}</button>`).join('')}</div>`;
+            } else if (mode === 'xo') {
                 view.innerHTML = `<h3>Tic-Tac-Toe</h3><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;" id="xo-grid"></div>`;
                 let board = Array(9).fill('');
                 for(let i=0; i<9; i++) {
@@ -184,37 +203,23 @@
                     c.onclick = () => { if(!board[i]){ board[i]='X'; c.innerText='X'; checkWinXO(board); } };
                     document.getElementById('xo-grid').appendChild(c);
                 }
-            }
-            else if(mode === 'stop5') {
-                view.innerHTML = `<h3>Stop at 5.00s</h3><h1 style="font-size:4rem; margin:20px 0;" id="clock">0.00</h1><button id="s-btn" class="btn" style="height:80px">STOP</button>`;
+            } else if (mode === 'stop5') {
+                view.innerHTML = `<h3>Stop at 5.00s</h3><h1 style="font-size:4rem;" id="clock">0.00</h1><button id="s-btn" class="btn">STOP</button>`;
                 let count = 0;
-                gameTimer = setInterval(() => { count += 0.01; document.getElementById('clock').innerText = count.toFixed(2); if(count>6.5) showResult('LATE','Try again', false); }, 10);
+                gameTimer = setInterval(() => { count += 0.01; document.getElementById('clock').innerText = count.toFixed(2); }, 10);
                 document.getElementById('s-btn').onclick = () => { clearInterval(gameTimer); Math.abs(5-count)<0.2 ? showResult('GODLIKE!','Time: '+count.toFixed(2),true) : showResult('FAILED','Time: '+count.toFixed(2),false); };
-            }
-            else if(mode === 'ball') {
-                view.innerHTML = `<div style="height:250px; position:relative; background:#000; border-radius:15px; overflow:hidden;"><div id="ghost" style="position:absolute; font-size:45px; cursor:pointer;">👻</div></div><p>Catch 10 Ghosts!</p>`;
+            } else if (mode === 'ball') {
+                view.innerHTML = `<div style="height:250px; position:relative; background:#000; border-radius:15px; overflow:hidden;"><div id="ghost" style="position:absolute; font-size:45px; cursor:pointer;">👻</div></div>`;
                 const g = document.getElementById('ghost'); const move = () => { g.style.left = Math.random()*85+'%'; g.style.top = Math.random()*80+'%'; }; move();
                 g.onclick = () => { score++; move(); if(score>=10) showResult('HUNTER!','10 Ghosts Caught',true); };
-            }
-            else if(mode === 'tap') {
-                view.innerHTML = `<h3>TAP 30 TIMES!</h3><button id="t-btn" class="btn" style="height:140px; font-size:3.5rem;" onclick="score++; document.getElementById('t-btn').innerText=score; if(score>=30) showResult('SUPER SONIC!','⚡',true)">0</button>`;
-                let t = 8;
-                gameTimer = setInterval(() => { t -= 0.1; if(t<=0) showResult('TOO SLOW','Try faster',false); }, 100);
-            }
-            else if(mode === 'mem') {
-                let cards = [1,1,2,2,3,3,4,4].sort(()=>Math.random()-0.5); let flipped = [];
-                view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>`;
-                cards.forEach(n => {
-                    const c = document.createElement('div'); c.className = 'cell'; c.innerText = '?';
-                    c.onclick = () => { if(flipped.length<2 && c.innerText==='?'){ c.innerText=n; flipped.push({c,n}); if(flipped.length===2){ if(flipped[0].n===flipped[1].n){ score++; flipped=[]; if(score===4) showResult('IQ 200!','🧠',true); } else { setTimeout(()=>{ flipped[0].c.innerText='?'; flipped[1].c.innerText='?'; flipped=[]; },500); } } } };
-                    view.querySelector('div').appendChild(c);
-                });
+            } else if (mode === 'tap') {
+                view.innerHTML = `<h3>TAP 30 TIMES!</h3><button id="t-btn" class="btn" style="height:120px; font-size:3rem;" onclick="score++; document.getElementById('t-btn').innerText=score; if(score>=30) showResult('SUPER SONIC!','⚡',true)">0</button>`;
             }
         }
 
-        function checkMath(val) {
-            if(val === mathAnswer) showResult('GENIUS!','Correct Answer',true);
-            else showResult('WRONG!','Better luck next time',false);
+        function checkMath(val, ans) {
+            if(val === ans) showResult('GENIUS!','Correct!',true);
+            else showResult('WRONG!','Try again',false);
         }
 
         function checkWinXO(b) {
