@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA GAMING - Full Edition</title>
+    <title>BRSMAYKA GAMING - Pro Edition</title>
     <style>
         :root { --primary: #00ffcc; --secondary: #ff3366; --bg: #0a0a0a; --accent-green: #00ff44; }
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; overflow-x: hidden; }
         
-        .brand-name { color: var(--accent-green); text-shadow: 0 0 15px var(--accent-green); font-size: 2.5rem; margin: 10px 0; }
+        .brand-name { color: var(--accent-green); text-shadow: 0 0 15px var(--accent-green); font-size: 2.5rem; margin: 10px 0; font-weight: 900; }
 
         #splash-screen {
             position: fixed; inset: 0; background: var(--bg); z-index: 30000;
@@ -22,22 +22,15 @@
             padding: 10px; border-radius: 8px; z-index: 10001;
         }
 
-        /* تنسيق عداد الزوار */
         #visitor-counter-box {
-            margin: 10px auto;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            display: inline-block;
-            border-radius: 10px;
-            border: 1px dashed #333;
+            margin: 10px auto; background: rgba(255, 255, 255, 0.05);
+            padding: 10px; display: inline-block; border-radius: 10px; border: 1px dashed #333;
         }
 
+        /* تأثير الاهتزاز */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
+            10% { transform: translate(-3px, 0px) rotate(1deg); }
             50% { transform: translate(-1px, 2px) rotate(-1deg); }
             100% { transform: translate(0px, 0px) rotate(0deg); }
         }
@@ -45,27 +38,38 @@
 
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
         .game-card { background: #111; border: 1px solid #333; width: 145px; border-radius: 15px; padding: 15px; cursor: pointer; transition: 0.3s; }
-        .game-card:hover { border-color: var(--accent-green); transform: scale(1.05); }
+        .game-card:hover { border-color: var(--accent-green); transform: translateY(-5px); }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; backdrop-filter: blur(10px); }
-        .modal-content { background: #111; margin: 5vh auto; width: 92%; max-width: 400px; padding: 20px; border-radius: 20px; border: 2px solid var(--primary); position: relative; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; backdrop-filter: blur(10px); }
+        .modal-content { background: #0f0f0f; margin: 5vh auto; width: 92%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--accent-green); position: relative; box-shadow: 0 0 30px rgba(0, 255, 68, 0.2); }
         
-        #timer-bar-container { width: 100%; height: 6px; background: #222; margin: 15px 0; }
-        #timer-bar { height: 100%; width: 100%; background: var(--accent-green); transition: 0.1s linear; }
+        /* واجهة النتيجة الجديدة بدلاً من جوجل */
+        #custom-result-overlay {
+            display: none; position: absolute; inset: 0; background: #0a0a0a;
+            z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 23px; padding: 20px;
+        }
+        .result-title { font-size: 2rem; font-weight: 900; margin-bottom: 10px; }
+        .win-style { color: var(--accent-green); text-shadow: 0 0 15px var(--accent-green); }
+        .lose-style { color: var(--secondary); text-shadow: 0 0 15px var(--secondary); }
+
+        #timer-bar-container { width: 100%; height: 6px; background: #222; margin: 15px 0; border-radius: 10px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--accent-green); }
 
         .btn { background: var(--accent-green); color: #000; border: none; padding: 12px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 85%; margin: 5px; }
-        .cell { background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; height: 75px; width: 75px; font-size: 32px; border: 1px solid #333; cursor: pointer; }
+        .cell { background: #161616; border-radius: 12px; display: flex; align-items: center; justify-content: center; height: 75px; width: 75px; font-size: 32px; border: 1px solid #333; cursor: pointer; color: var(--accent-green); }
         
         .level-select { margin-bottom: 15px; display: flex; gap: 5px; justify-content: center; }
-        .lvl-btn { padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 5px; border: 1px solid var(--primary); background: transparent; color: white; }
-        .lvl-btn.active { background: var(--primary); color: black; }
+        .lvl-btn { padding: 6px 12px; font-size: 11px; cursor: pointer; border-radius: 5px; border: 1px solid var(--primary); background: transparent; color: white; text-transform: uppercase; }
+        .lvl-btn.active { background: var(--accent-green); color: black; border-color: var(--accent-green); }
     </style>
 </head>
 <body onload="loadGlobalScore()">
 
     <div id="splash-screen">
         <h1 class="brand-name">BRSMAYKA OS</h1>
-        <button class="btn" style="width:200px" onclick="bootSystem()">ENTER SYSTEM</button>
+        <p style="color: #555;">SYSTEM BOOTING...</p>
+        <button class="btn" style="width:200px; margin-top:20px;" onclick="bootSystem()">ENTER SYSTEM</button>
     </div>
 
     <div id="persistent-score">Points: <span id="total-points">0</span></div>
@@ -75,7 +79,6 @@
     <div id="visitor-counter-box">
         <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
         <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
-        <noscript><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=j1hadcun8xqdfhbzttteef2bq7wl376p" border="0" title="website counter" alt="website counter"></a></noscript>
     </div>
 
     <div class="container">
@@ -90,7 +93,15 @@
         <div id="game-box" class="modal-content">
             <span style="position:absolute; right:20px; top:10px; font-size:30px; cursor:pointer;" onclick="stop()">&times;</span>
             <div id="timer-bar-container"><div id="timer-bar"></div></div>
+            
             <div id="game-view"></div>
+
+            <div id="custom-result-overlay">
+                <h1 id="res-title" class="result-title"></h1>
+                <p id="res-desc" style="margin-bottom: 20px;"></p>
+                <button class="btn" onclick="hideResult()">TRY AGAIN</button>
+                <button class="btn" style="background:#222; color:white;" onclick="stop()">CLOSE</button>
+            </div>
         </div>
     </div>
 
@@ -125,26 +136,41 @@
             document.getElementById('total-points').innerText = globalPoints;
         }
 
-        function showResult(msg, isWin) {
+        // دالة عرض النتيجة الاحترافية داخل الموقع
+        function showResult(title, desc, isWin) {
             clearInterval(gameTimer);
-            if(!isWin) {
-                triggerShake();
-                playSfx(150, 'sawtooth', 0.1, 0.5);
-            } else {
-                playSfx(523, 'sine', 0.1, 0.5);
+            const overlay = document.getElementById('custom-result-overlay');
+            const titleEl = document.getElementById('res-title');
+            
+            titleEl.innerText = title;
+            titleEl.className = 'result-title ' + (isWin ? 'win-style' : 'lose-style');
+            document.getElementById('res-desc').innerText = desc;
+            
+            if(!isWin) { triggerShake(); playSfx(150, 'sawtooth', 0.1, 0.5); }
+            else { 
+                playSfx(523, 'sine', 0.1, 0.5); 
                 globalPoints += 50;
                 localStorage.setItem('brs_gaming_score', globalPoints);
                 document.getElementById('total-points').innerText = globalPoints;
             }
-            alert(msg);
-            stop();
+            overlay.style.display = 'flex';
         }
 
-        function stop() { clearInterval(gameTimer); document.getElementById('gameModal').style.display = 'none'; }
+        function hideResult() { 
+            document.getElementById('custom-result-overlay').style.display = 'none'; 
+            start(currentMode); 
+        }
+
+        function stop() { 
+            clearInterval(gameTimer); 
+            document.getElementById('gameModal').style.display = 'none'; 
+            document.getElementById('custom-result-overlay').style.display = 'none';
+        }
 
         function start(mode) {
             currentMode = mode; score = 0; canPlay = true; board = Array(9).fill('');
             document.getElementById('gameModal').style.display = 'block';
+            document.getElementById('custom-result-overlay').style.display = 'none';
             const view = document.getElementById('game-view');
             view.innerHTML = '';
             
@@ -154,32 +180,37 @@
             gameTimer = setInterval(() => {
                 timeLeft -= 0.1;
                 document.getElementById('timer-bar').style.width = (timeLeft/totalTime)*100 + '%';
-                if(timeLeft <= 0) showResult('TIME OVER!', false);
+                if(timeLeft <= 0) showResult('TIME EXPIRED', 'Robot won this round!', false);
             }, 100);
 
             if(mode === 'xo') {
                 view.innerHTML = `
                     <div class="level-select">
                         <button class="lvl-btn ${difficulty==='easy'?'active':''}" onclick="difficulty='easy'; start('xo')">Easy</button>
-                        <button class="lvl-btn ${difficulty==='med'?'active':''}" onclick="difficulty='med'; start('xo')">Medium</button>
+                        <button class="lvl-btn ${difficulty==='med'?'active':''}" onclick="difficulty='med'; start('xo')">Med</button>
                         <button class="lvl-btn ${difficulty==='hard'?'active':''}" onclick="difficulty='hard'; start('xo')">Hard</button>
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(3,75px); gap:5px; justify-content:center;"></div>`;
+                    <div style="display:grid; grid-template-columns:repeat(3,75px); gap:8px; justify-content:center;"></div>`;
                 for(let i=0; i<9; i++) {
                     const c = document.createElement('div'); c.className = 'cell'; c.id = 'c'+i;
                     c.onclick = () => { if(canPlay && board[i] === '') { board[i] = 'X'; c.innerText = 'X'; playSfx(440, 'sine', 0.05, 0.1); if(!checkXO()) { canPlay = false; setTimeout(aiMove, 500); } } };
                     view.lastChild.appendChild(c);
                 }
             } else if(mode === 'math') {
-                const a = Math.floor(Math.random()*20), b = Math.floor(Math.random()*20), ans = a+b;
-                view.innerHTML = `<h2>${a} + ${b} = ?</h2><button class="btn" onclick="showResult('CORRECT!',true)">${ans}</button><button class="btn" onclick="showResult('WRONG!',false)">${ans+3}</button>`;
+                const a = Math.floor(Math.random()*30), b = Math.floor(Math.random()*30), ans = a+b;
+                view.innerHTML = `<h1 style="font-size:3rem; margin:20px 0;">${a} + ${b}</h1>`;
+                [ans, ans+5, ans-3].sort(()=>Math.random()-0.5).forEach(o => {
+                    const btn = document.createElement('button'); btn.className = 'btn'; btn.innerText = o;
+                    btn.onclick = () => o === ans ? showResult('CORRECT!', '+50 Points Added', true) : showResult('WRONG!', 'Calculation Error', false);
+                    view.appendChild(btn);
+                });
             } else if(mode === 'tap') {
-                view.innerHTML = `<h2>TAP 30x!</h2><button id="tap-btn" class="btn" style="height:100px; font-size:40px;" onclick="score++; this.innerText=score; playSfx(600,'sine',0.05,0.1); if(score>=30) showResult('SPEED DEMON!',true)">0</button>`;
+                view.innerHTML = `<h2>TAP 30x FAST!</h2><button id="tap-btn" class="btn" style="height:120px; font-size:45px;" onclick="score++; this.innerText=score; playSfx(600,'sine',0.05,0.1); if(score>=30) showResult('VICTORY','You are too fast!',true)">0</button>`;
             } else if(mode === 'ball') {
-                view.innerHTML = `<div style="height:200px; position:relative; background:#000; border-radius:10px; overflow:hidden;"><div id="ghost" style="position:absolute; font-size:40px; cursor:pointer;" onclick="score++; playSfx(800,'sine',0.05,0.1); this.style.left=Math.random()*80+'%'; this.style.top=Math.random()*80+'%'; if(score>=10) showResult('WIN!',true)">👻</div></div>`;
+                view.innerHTML = `<div style="height:250px; position:relative; background:#050505; border-radius:15px; overflow:hidden;"><div id="ghost" style="position:absolute; font-size:45px; cursor:pointer;" onclick="score++; playSfx(800,'sine',0.05,0.1); this.style.left=Math.random()*85+'%'; this.style.top=Math.random()*85+'%'; if(score>=10) showResult('MISSION COMPLETE','Ghosts Cleared',true)">👻</div></div>`;
             } else if(mode === 'mem') {
-                const icons = ['🍎','🍎','🍌','🍌','🍇','🍇','🍓','🍓','🍒','🍒','🍍','🍍'].sort(()=>Math.random()-0.5);
-                view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(4,70px); gap:5px; justify-content:center;"></div>`;
+                const icons = ['🔥','🔥','💎','💎','⚡','⚡','🍒','🍒','🍀','🍀','⭐','⭐'].sort(()=>Math.random()-0.5);
+                view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(4,70px); gap:8px; justify-content:center;"></div>`;
                 let flipped = [];
                 icons.forEach(icon => {
                     const c = document.createElement('div'); c.className = 'cell'; c.innerText = '?';
@@ -187,7 +218,7 @@
                         if(flipped.length<2 && c.innerText=='?') {
                             c.innerText = icon; flipped.push({el:c, val:icon});
                             if(flipped.length===2) {
-                                if(flipped[0].val===flipped[1].val) { score++; flipped=[]; if(score===6) showResult('WIN!',true); }
+                                if(flipped[0].val===flipped[1].val) { score++; flipped=[]; if(score===6) showResult('SYSTEM RESTORED','Memory Matched',true); }
                                 else { setTimeout(()=>{ flipped.forEach(f=>f.el.innerText='?'); flipped=[]; }, 500); }
                             }
                         }
@@ -198,8 +229,8 @@
         }
 
         function checkXO() {
-            if(checkWin(board, 'X')) { showResult('YOU WIN!', true); return true; }
-            if(!board.includes('')) { showResult('DRAW!', true); return true; }
+            if(checkWin(board, 'X')) { showResult('ACCESS GRANTED', 'You beat the system!', true); return true; }
+            if(!board.includes('')) { showResult('DRAW', 'Fair game', true); return true; }
             return false;
         }
 
@@ -208,11 +239,12 @@
             if(difficulty === 'easy') move = getRandomMove();
             else if(difficulty === 'med') move = Math.random() > 0.5 ? minimax(board, 'O').index : getRandomMove();
             else move = minimax(board, 'O').index;
-
+            if(move === undefined) return;
             board[move] = 'O';
             document.getElementById('c'+move).innerText = 'O';
-            if(checkWin(board, 'O')) showResult('AI WINS!', false);
-            else if(!board.includes('')) showResult('DRAW!', true);
+            document.getElementById('c'+move).style.color = 'var(--secondary)';
+            if(checkWin(board, 'O')) showResult('SYSTEM FAILURE', 'Robot is superior!', false);
+            else if(!board.includes('')) showResult('DRAW', 'Fair match', true);
             else canPlay = true;
         }
 
@@ -243,10 +275,10 @@
             }
             let bestMove;
             if(player === 'O') {
-                let bestScore = -10000;
+                let bestScore = -Infinity;
                 for(let i=0; i<moves.length; i++) { if(moves[i].score > bestScore) { bestScore = moves[i].score; bestMove = i; } }
             } else {
-                let bestScore = 10000;
+                let bestScore = Infinity;
                 for(let i=0; i<moves.length; i++) { if(moves[i].score < bestScore) { bestScore = moves[i].score; bestMove = i; } }
             }
             return moves[bestMove];
