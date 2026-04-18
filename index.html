@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA AI - 2026 Edition 🚀</title>
+    <title>BRSMAYKA AI - 2026 Gaming Hub 🚀</title>
     <style>
         :root { --primary: #0088ff; --secondary: #ff3333; --bg: #050505; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; overflow: hidden; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; overflow-x: hidden; }
         
         #persistent-score {
             position: fixed; top: 15px; left: 15px;
@@ -15,7 +15,6 @@
             border: 2px solid var(--primary);
             padding: 10px 15px; border-radius: 12px;
             font-weight: bold; z-index: 10001;
-            box-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
             backdrop-filter: blur(5px);
         }
 
@@ -39,30 +38,32 @@
         .counter-wrapper { background: rgba(255, 255, 255, 0.05); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--primary); display: inline-block; margin-top: 10px; }
 
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-        .game-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); width: 130px; border-radius: 20px; padding: 15px; cursor: pointer; transition: 0.3s; }
+        .game-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); width: 140px; border-radius: 20px; padding: 15px; cursor: pointer; transition: 0.3s; }
         .game-card:hover { border-color: var(--primary); transform: scale(1.05); }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; backdrop-filter: blur(10px); }
-        .modal-content { background: #111; margin: 5vh auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--primary); position: relative; }
+        .modal-content { background: #111; margin: 5vh auto; width: 95%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--primary); position: relative; min-height: 400px; }
         
-        #result-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; border-radius: 23px; }
+        #result-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; border-radius: 23px; padding: 20px; }
         .win-text { color: #00ff88; font-size: 2.2rem; }
+        .lose-text { color: var(--secondary); font-size: 2.2rem; }
         
-        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 80%; margin-top: 10px; transition: 0.2s; }
-        .btn:active { transform: scale(0.95); }
-        .btn-hint { background: #555; font-size: 0.8rem; width: 50%; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 80%; margin-top: 10px; }
+        .btn-hint { background: #444; width: 60%; font-size: 0.8rem; margin-top: 5px; }
 
-        .riddle-text { font-size: 1.2rem; line-height: 1.5; margin: 20px 0; color: #ddd; }
-        #hint-text { color: #ffcc00; font-style: italic; margin-bottom: 10px; min-height: 20px; display: block; }
-        .riddle-input { width: 90%; padding: 12px; border-radius: 10px; border: 1px solid var(--primary); background: #222; color: white; text-align: center; font-size: 1rem; margin-bottom: 10px; outline: none; }
+        .cell { background: #1a1a1a; border-radius: 12px; display: flex; align-items: center; justify-content: center; height: 70px; font-size: 30px; border: 1px solid #333; cursor: pointer; color: var(--primary); }
+        .riddle-input { width: 90%; padding: 12px; border-radius: 10px; border: 1px solid var(--primary); background: #222; color: white; text-align: center; margin: 15px 0; outline: none; }
+        #hint-display { color: #ffcc00; font-style: italic; display: block; min-height: 20px; margin-bottom: 10px; }
+        #stop-clock { font-size: 4rem; margin: 20px 0; font-family: monospace; }
     </style>
 </head>
 <body onload="loadGlobalScore()">
+
     <div id="persistent-score">Score: <span id="total-points">0</span></div>
 
     <div id="fx-layer">
         <div class="fx-emoji" id="fx-emoji">🌟</div>
-        <div class="fx-points" id="fx-text">+0 Points</div>
+        <div class="fx-points" id="fx-text">+0</div>
     </div>
 
     <div class="header-box">
@@ -75,7 +76,7 @@
     <div class="container">
         <div class="game-card" onclick="start('riddle')"> 🧩 <h3>Riddles</h3> </div>
         <div class="game-card" onclick="start('xo')"> ❌ <h3>Tic-Tac-Toe</h3> </div>
-        <div class="game-card" onclick="start('stop5')"> ⏱️ <h3>5s Challenge</h3> </div>
+        <div class="game-card" onclick="start('stop5')"> ⏱️ <h3>5s Goal</h3> </div>
         <div class="game-card" onclick="start('ball')"> 👻 <h3>Ghost Hunt</h3> </div>
         <div class="game-card" onclick="start('mem')"> 🧠 <h3>Memory</h3> </div>
         <div class="game-card" onclick="start('tap')"> ⚡ <h3>Speed Tap</h3> </div>
@@ -83,12 +84,12 @@
 
     <div id="gameModal" class="modal">
         <div class="modal-content">
-            <span style="position:absolute; right:20px; top:10px; font-size:35px; cursor:pointer; color:white;" onclick="stop()">&times;</span>
+            <span style="position:absolute; right:20px; top:10px; font-size:35px; cursor:pointer;" onclick="stop()">&times;</span>
             <div id="game-view"></div>
             <div id="result-overlay">
                 <h1 id="result-msg"></h1>
-                <p id="result-details" style="color:#aaa;"></p>
-                <button class="btn" onclick="hideResult()">Next 🔄</button>
+                <p id="result-details"></p>
+                <button class="btn" onclick="hideResult()">Try Again 🔄</button>
             </div>
         </div>
     </div>
@@ -96,32 +97,21 @@
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
 
     <script>
-        let currentMode, currentRiddle, globalPoints = 0;
-        let hintUsed = false;
+        let currentMode, score = 0, stopInterval, globalPoints = 0, hintUsed = false, currentRiddle;
 
         const pointsMap = { 'xo': 15, 'riddle': 30, 'stop5': 20, 'ball': 10, 'mem': 15, 'tap': 5 };
         const emojiMap = { 'xo': '❌', 'riddle': '🧩', 'stop5': '⏱️', 'ball': '👻', 'mem': '🧠', 'tap': '⚡' };
 
         const riddles = [
-            { q: "What has keys but can't open locks?", a: "piano", h: "It's a musical instrument." },
-            { q: "What has to be broken before you can use it?", a: "egg", h: "You cook it for breakfast." },
-            { q: "What gets wetter the more it dries?", a: "towel", h: "You use it after a shower." },
-            { q: "What has one eye but can't see?", a: "needle", h: "Used for sewing clothes." },
-            { q: "The more of this there is, the less you see. What is it?", a: "darkness", h: "The opposite of light." }
+            { q: "What has keys but can't open locks?", a: "piano", h: "Think of music." },
+            { q: "What has to be broken before you can use it?", a: "egg", h: "Breakfast food." },
+            { q: "What gets wetter the more it dries?", a: "towel", h: "Bathroom item." },
+            { q: "What has one eye but can't see?", a: "needle", h: "Used for sewing." }
         ];
 
         function loadGlobalScore() {
             globalPoints = parseInt(localStorage.getItem('brsmayka_score')) || 0;
             document.getElementById('total-points').innerText = globalPoints;
-        }
-
-        function triggerWinFX(game, finalPoints) {
-            const fxLayer = document.getElementById('fx-layer');
-            document.getElementById('fx-emoji').innerText = emojiMap[game];
-            document.getElementById('fx-text').innerText = `+${finalPoints} Points`;
-            fxLayer.style.display = 'flex';
-            createBalloons();
-            setTimeout(() => { fxLayer.style.display = 'none'; }, 4000);
         }
 
         function createBalloons() {
@@ -137,6 +127,15 @@
             }
         }
 
+        function triggerWinFX(game, pts) {
+            const fx = document.getElementById('fx-layer');
+            document.getElementById('fx-emoji').innerText = emojiMap[game];
+            document.getElementById('fx-text').innerText = `+${pts}`;
+            fx.style.display = 'flex';
+            createBalloons();
+            setTimeout(() => { fx.style.display = 'none'; }, 4500);
+        }
+
         function showResult(msg, details, isWin) {
             const overlay = document.getElementById('result-overlay');
             document.getElementById('result-msg').innerText = msg;
@@ -145,7 +144,7 @@
             
             if(isWin) {
                 let p = pointsMap[currentMode];
-                if(currentMode === 'riddle' && hintUsed) p -= 10; // Penalty for hint
+                if(currentMode === 'riddle' && hintUsed) p -= 10;
                 globalPoints += p;
                 localStorage.setItem('brsmayka_score', globalPoints);
                 document.getElementById('total-points').innerText = globalPoints;
@@ -155,41 +154,63 @@
         }
 
         function hideResult() { document.getElementById('result-overlay').style.display = 'none'; start(currentMode); }
-        function stop() { document.getElementById('gameModal').style.display = 'none'; }
+        function stop() { clearInterval(stopInterval); document.getElementById('gameModal').style.display = 'none'; }
 
         function start(mode) {
-            currentMode = mode; hintUsed = false;
+            currentMode = mode; score = 0; hintUsed = false;
+            clearInterval(stopInterval);
             document.getElementById('gameModal').style.display = 'block';
             const view = document.getElementById('game-view');
             view.innerHTML = '';
 
             if(mode === 'riddle') {
-                currentRiddle = riddles[Math.floor(Math.random() * riddles.length)];
-                view.innerHTML = `
-                    <h3>Riddle Challenge 🧩</h3>
-                    <p class="riddle-text">${currentRiddle.q}</p>
-                    <span id="hint-text"></span>
-                    <input type="text" id="riddle-ans" class="riddle-input" placeholder="Type answer...">
-                    <button class="btn" onclick="checkRiddle()">Submit Answer</button>
-                    <button class="btn btn-hint" onclick="showHint()">Get Hint (-10 pts)</button>
-                `;
-            } else {
-                view.innerHTML = `<h3>Coming Soon</h3><p>Game logic for ${mode} is active.</p>`;
-                // (Other games logic remains as in previous version)
+                currentRiddle = riddles[Math.floor(Math.random()*riddles.length)];
+                view.innerHTML = `<h3>Puzzle 🧩</h3><p>${currentRiddle.q}</p><small id="hint-display"></small><input type="text" id="ans" class="riddle-input" placeholder="Answer..."><button class="btn" onclick="checkRiddle()">Submit</button><button class="btn btn-hint" onclick="showHint()">Hint (-10 pts)</button>`;
+            } 
+            else if(mode === 'xo') {
+                view.innerHTML = `<h3>Tic-Tac-Toe</h3><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;" id="grid"></div>`;
+                let b = Array(9).fill('');
+                for(let i=0; i<9; i++) {
+                    const c = document.createElement('div'); c.className = 'cell';
+                    c.onclick = () => { if(!b[i]){ b[i]='X'; c.innerText='X'; checkWinXO(b); } };
+                    document.getElementById('grid').appendChild(c);
+                }
+            } 
+            else if(mode === 'stop5') {
+                view.innerHTML = `<h3>Stop at 5.00s</h3><h1 id="stop-clock">0.00</h1><button id="s-btn" class="btn" style="height:80px">STOP</button>`;
+                let count = 0;
+                stopInterval = setInterval(() => { count += 0.01; document.getElementById('stop-clock').innerText = count.toFixed(2); if(count>7) showResult('Late!','Too slow',false); }, 10);
+                document.getElementById('s-btn').onclick = () => { clearInterval(stopInterval); Math.abs(5-count)<0.2 ? showResult('Perfect!','Time: '+count.toFixed(2),true) : showResult('Failed!','Time: '+count.toFixed(2),false); };
+            } 
+            else if(mode === 'ball') {
+                view.innerHTML = `<div style="height:250px; position:relative; background:#000; border-radius:15px; overflow:hidden;"><div id="ghost" style="position:absolute; font-size:40px; cursor:pointer;">👻</div></div>`;
+                const g = document.getElementById('ghost'); const move = () => { g.style.left = Math.random()*80+'%'; g.style.top = Math.random()*80+'%'; }; move();
+                g.onclick = () => { score++; move(); if(score>=10) showResult('Exorcist!','Caught 10',true); };
+            } 
+            else if(mode === 'tap') {
+                view.innerHTML = `<h3>Tap 25 Times!</h3><button id="t-btn" class="btn" style="height:120px; font-size:3rem;" onclick="score++; document.getElementById('t-btn').innerText=score; if(score>=25) showResult('Speed!','⚡',true)">0</button>`;
+            } 
+            else if(mode === 'mem') {
+                let cards = [1,1,2,2,3,3,4,4].sort(()=>Math.random()-0.5); let flipped = [];
+                view.innerHTML = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;"></div>`;
+                cards.forEach(n => {
+                    const c = document.createElement('div'); c.className = 'cell'; c.innerText = '?';
+                    c.onclick = () => { if(flipped.length<2 && c.innerText==='?'){ c.innerText=n; flipped.push({c,n}); if(flipped.length===2){ if(flipped[0].n===flipped[1].n){ score++; flipped=[]; if(score===4) showResult('Smart!','🧠',true); } else { setTimeout(()=>{ flipped[0].c.innerText='?'; flipped[1].c.innerText='?'; flipped=[]; },500); } } } };
+                    view.querySelector('div').appendChild(c);
+                });
             }
         }
 
-        function showHint() {
-            if(!hintUsed) {
-                hintUsed = true;
-                document.getElementById('hint-text').innerText = "Hint: " + currentRiddle.h;
-            }
+        function showHint() { hintUsed = true; document.getElementById('hint-display').innerText = "Hint: " + currentRiddle.h; }
+        function checkRiddle() { 
+            const u = document.getElementById('ans').value.toLowerCase().trim(); 
+            if(u === currentRiddle.a) showResult('Correct!','Winner',true); 
+            else showResult('Wrong!','Try again',false); 
         }
-
-        function checkRiddle() {
-            const user = document.getElementById('riddle-ans').value.toLowerCase().trim();
-            if(user === currentRiddle.a) showResult('Correct!', 'You are a genius!', true);
-            else showResult('Wrong!', 'The answer was ' + currentRiddle.a, false);
+        function checkWinXO(b) {
+            const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for(let s of w) if(b[s[0]] && b[s[0]]===b[s[1]] && b[s[0]]===b[s[2]]) return showResult('Winner!','🏆',true);
+            if(!b.includes('')) showResult('Draw!','🤝',true);
         }
     </script>
 </body>
