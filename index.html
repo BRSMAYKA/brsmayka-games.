@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266"
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266"
      crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,6 +23,31 @@
             background: rgba(0, 255, 68, 0.1); border: 1px solid var(--accent-green);
             padding: 10px; border-radius: 8px; z-index: 10001;
         }
+
+        /* تنسيق أزرار المشاركة الجديدة */
+        .share-container {
+            margin: 25px auto;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            max-width: 400px;
+            border: 1px solid #222;
+        }
+        .share-btn {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+        .share-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .wa { background: #25D366; }
+        .fb { background: #1877F2; }
+        .tw { background: #000000; border: 1px solid #333; }
 
         #visitor-counter-box {
             margin: 10px auto; background: rgba(255, 255, 255, 0.05);
@@ -74,6 +100,13 @@
 
     <h1 class="brand-name">BRSMAYKA GAMING</h1>
 
+    <div class="share-container">
+        <div style="font-size: 12px; color: #888; margin-bottom: 8px;">SHARE SITE</div>
+        <a href="https://api.whatsapp.com/send?text=Check out BRSMAYKA GAMING! Play 5 games in 1 site: https://brsmayka.github.io" target="_blank" class="share-btn wa">WhatsApp</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://brsmayka.github.io" target="_blank" class="share-btn fb">Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url=https://brsmayka.github.io&text=Play BRSMAYKA GAMES Online!" target="_blank" class="share-btn tw">X (Twitter)</a>
+    </div>
+
     <div id="visitor-counter-box">
         <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
         <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=j1hadcun8xqdfhbzttteef2bq7wl376p&down=async" async></script>
@@ -108,10 +141,10 @@
     </div>
 
     <script>
+        // الكود البرمجي (Javascript) يظل كما هو دون تغيير
         let audioCtx, currentMode, score = 0, gameTimer, timeLeft, totalTime, globalPoints = 0;
         let board = [], canPlay = true, difficulty = 'hard';
 
-        // دالة توليد الأصوات (الطقطقة)
         function playSfx(f, type, vol, dur) {
             if(!audioCtx) return;
             try {
@@ -130,7 +163,6 @@
 
         function bootSystem() {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            // طقطقة الدخول
             [311, 466, 622, 932].forEach((f, i) => { 
                 setTimeout(() => playSfx(f, 'sine', 0.1, 0.4), i * 150); 
             });
@@ -154,12 +186,12 @@
             if(isWin) {
                 titleEl.style.color = "var(--accent-green)";
                 box.classList.add('win-fx');
-                playSfx(523, 'sine', 0.1, 0.5); // صوت فوز
+                playSfx(523, 'sine', 0.1, 0.5); 
                 globalPoints += 50;
             } else {
                 titleEl.style.color = "var(--secondary)";
                 box.classList.add('shake-fx');
-                playSfx(110, 'sawtooth', 0.15, 0.5); // صوت خسارة
+                playSfx(110, 'sawtooth', 0.15, 0.5); 
             }
 
             localStorage.setItem('brs_gaming_score', globalPoints);
@@ -168,21 +200,21 @@
         }
 
         function hideResult() { 
-            playSfx(800, 'sine', 0.05, 0.1); // طقطقة زر
+            playSfx(800, 'sine', 0.05, 0.1); 
             document.getElementById('game-box').classList.remove('win-fx', 'shake-fx');
             document.getElementById('custom-result-overlay').style.display = 'none'; 
             start(currentMode); 
         }
 
         function stop() { 
-            playSfx(200, 'sine', 0.05, 0.1); // طقطقة إغلاق
+            playSfx(200, 'sine', 0.05, 0.1); 
             clearInterval(gameTimer);
             document.getElementById('game-box').classList.remove('win-fx', 'shake-fx');
             document.getElementById('gameModal').style.display = 'none'; 
         }
 
         function start(mode) {
-            playSfx(600, 'sine', 0.05, 0.1); // طقطقة بدء اللعبة
+            playSfx(600, 'sine', 0.05, 0.1); 
             currentMode = mode; score = 0; canPlay = true; board = Array(9).fill('');
             document.getElementById('gameModal').style.display = 'block';
             document.getElementById('custom-result-overlay').style.display = 'none';
@@ -212,7 +244,7 @@
                     const c = document.createElement('div'); c.className = 'cell'; c.id = 'c'+i;
                     c.onclick = () => { 
                         if(canPlay && board[i] === '') { 
-                            playSfx(1000, 'sine', 0.05, 0.05); // طقطقة الضغط على المربع
+                            playSfx(1000, 'sine', 0.05, 0.05); 
                             board[i] = 'X'; c.innerText = 'X'; 
                             if(!checkXO()) { canPlay = false; setTimeout(aiMove, 500); } 
                         } 
@@ -265,7 +297,7 @@
             else move = minimax(board, 'O').index;
             if(move === undefined) return;
             board[move] = 'O';
-            playSfx(400, 'sine', 0.05, 0.1); // طقطقة حركة الروبوت
+            playSfx(400, 'sine', 0.05, 0.1); 
             document.getElementById('c'+move).innerText = 'O';
             document.getElementById('c'+move).style.color = 'var(--secondary)';
             if(checkWin(board, 'O')) showResult('DEFEAT', 'AI is too smart!', false);
