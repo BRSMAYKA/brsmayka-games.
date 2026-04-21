@@ -4,7 +4,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA GAMING - Full Edition</title>
+    <title>BRSMAYKA GAMING - Pro Edition</title>
     <style>
         :root { --primary: #00ffcc; --bg: #0a0a0a; --accent-green: #00ff44; --error-red: #ff3333; }
         * { box-sizing: border-box; touch-action: manipulation; }
@@ -60,7 +60,7 @@
         <div class="game-card" onclick="start('mem')">🧠 <h3>Memory</h3></div>
         <div class="game-card" onclick="start('ball')">👻 <h3>Ghost</h3></div>
         <div class="game-card" onclick="start('tap')">⚡ <h3>Tap</h3></div>
-    </div>
+        <div class="game-card" onclick="start('color')">🎨 <h3>Color Match</h3></div> </div>
 
     <footer>
         <div class="share-container">
@@ -169,7 +169,7 @@
                 </div><div id="xo-grid" style="display:grid; grid-template-columns:repeat(3,75px); gap:8px; justify-content:center;"></div>`;
                 for(let i=0; i<9; i++) {
                     const c = document.createElement('div'); c.className = 'cell'; c.id = 'c'+i;
-                    c.onclick = () => { if(canPlay && board[i]==='') { board[i]='X'; c.innerText='X'; c.classList.add('p-x'); canPlay=false; if(!checkWin(board,'X')) { if(board.includes('')) setTimeout(aiMove, 400); else showResult('DRAW','Fair Game!',true); } else showResult('WIN','Great!',true); } };
+                    c.onclick = () => { if(canPlay && board[i]==='') { playSfx(800,'sine',0.05,0.1); board[i]='X'; c.innerText='X'; c.classList.add('p-x'); canPlay=false; if(!checkWin(board,'X')) { if(board.includes('')) setTimeout(aiMove, 400); else showResult('DRAW','Fair Game!',true); } else showResult('WIN','Great!',true); } };
                     document.getElementById('xo-grid').appendChild(c);
                 }
             } else if(mode === 'ball') {
@@ -179,6 +179,16 @@
                 const g = document.getElementById('ghost');
                 const moveGhost = () => { if(currentMode==='ball') { g.style.left=Math.random()*85+'%'; g.style.top=Math.random()*85+'%'; setTimeout(moveGhost, 500); } };
                 moveGhost();
+            } else if(mode === 'color') {
+                const colors = ['RED', 'GREEN', 'BLUE', 'YELLOW'];
+                const hex = ['#ff3333', '#00ff44', '#3333ff', '#ffff00'];
+                const randText = Math.floor(Math.random()*4);
+                const randColor = Math.floor(Math.random()*4);
+                const isMatch = randText === randColor;
+                view.innerHTML = `<h3>Does the word match the color?</h3>
+                <h1 style="color:${hex[randColor]}; font-size:50px; margin:20px;">${colors[randText]}</h1>
+                <button class="btn" onclick="playSfx(800,'sine',0.05,0.1); ${isMatch} ? showResult('CORRECT','+50 Pts',true) : showResult('WRONG','No!',false)">YES</button>
+                <button class="btn" style="background:#444; color:white;" onclick="playSfx(800,'sine',0.05,0.1); ${!isMatch} ? showResult('CORRECT','+50 Pts',true) : showResult('WRONG','No!',false)">NO</button>`;
             } else if(mode === 'math') {
                 const a = Math.floor(Math.random()*25), b = Math.floor(Math.random()*25), ans = a+b;
                 view.innerHTML = `<h2>${a} + ${b} = ?</h2>`;
