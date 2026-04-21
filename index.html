@@ -306,29 +306,32 @@
                 for(let i=0; i<moves.length; i++) { if(moves[i].score < bestScore) { bestScore = moves[i].score; bestMove = i; } }
             }
             return moves[bestMove];
-        }// ... نهاية كود الميني ماكس ...
-} 
+     <script>
+// --- Smart Share Function ---
+const shareButton = document.getElementById('shareBtn');
 
-// كود المشاركة (يجب أن يكون قبل إغلاق script)
-document.getElementById('shareBtn').onclick = async () => {
+shareButton.onclick = async () => {
     if (navigator.share) {
         try {
             await navigator.share({
-                title: 'ألعاب رائعة!',
-                text: 'جرب هذه اللعبة الممتعة على موقعي!',
+                title: 'AI Challenge!',
+                text: 'Can you beat this AI? Try it now on my website!',
                 url: window.location.href
             });
-        } catch (err) { console.log('Cancelled'); }
+            console.log('Successful share');
+        } catch (error) {
+            console.log('Error sharing:', error);
+        }
     } else {
+        // Fallback for browsers that do not support Web Share API
         navigator.clipboard.writeText(window.location.href);
-        alert('تم نسخ الرابط!');
+        alert('Link copied to clipboard! Share it with your friends.');
     }
 };
-
 </script>
 
-<button id="shareBtn" style="padding: 10px 20px; background-color: #25d366; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-  شارك الموقع مع أصدقائك 🚀
+<button id="shareBtn" style="padding: 12px 25px; background-color: #25d366; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 20px auto; display: block;">
+  Share with Friends 🚀
 </button>
 
 </body>
