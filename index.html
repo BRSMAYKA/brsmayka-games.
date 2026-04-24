@@ -1,38 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266"
-     crossorigin="anonymous"></script>
-     
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRSMAYKA GAMING - Full Edition</title>
+    <title>BRSMAYKA</title>
     <style>
         :root { --primary: #00ffcc; --bg: #0a0a0a; --accent-green: #00ff44; --error-red: #ff3333; }
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; overflow-x: hidden; }
-        
         .brand-name { color: var(--accent-green); text-shadow: 0 0 15px var(--accent-green); font-size: 2.5rem; margin: 10px 0; font-weight: 900; }
         #splash-screen { position: fixed; inset: 0; background: var(--bg); z-index: 30000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #persistent-score { position: fixed; top: 15px; left: 15px; background: rgba(0, 255, 68, 0.1); border: 1px solid var(--accent-green); padding: 10px; border-radius: 8px; z-index: 10001; }
-
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
         .game-card { background: #111; border: 1px solid #333; width: 145px; border-radius: 15px; padding: 15px; cursor: pointer; transition: 0.3s; }
         .game-card:hover { border-color: var(--accent-green); transform: translateY(-5px); }
-
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; backdrop-filter: blur(10px); }
         .modal-content { background: #0f0f0f; margin: 5vh auto; width: 92%; max-width: 400px; padding: 25px; border-radius: 25px; border: 2px solid var(--primary); position: relative; }
         .wrong-bg { background: #660000 !important; border-color: #ff0000 !important; }
-        
         #timer-bar { height: 8px; background: var(--accent-green); width: 100%; transition: 0.1s linear; border-radius: 10px; }
         .btn { background: var(--accent-green); color: #000; border: none; padding: 12px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 85%; margin: 5px; }
-        
         .cell { background: #161616; border-radius: 12px; display: flex; align-items: center; justify-content: center; height: 75px; width: 75px; font-size: 38px; border: 1px solid #333; cursor: pointer; font-weight: 900; }
         .p-x { color: var(--accent-green); text-shadow: 0 0 10px var(--accent-green); }
         .p-o { color: var(--error-red); text-shadow: 0 0 10px var(--error-red); }
-
         .lvl-btn { padding: 6px 12px; font-size: 11px; cursor: pointer; border-radius: 5px; border: 1px solid var(--primary); background: transparent; color: white; margin: 2px; }
         .lvl-btn.active { background: var(--accent-green); color: black; }
-
         footer { margin-top: 60px; padding-bottom: 40px; border-top: 1px solid #222; }
         .share-container { margin: 25px auto; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 15px; max-width: 400px; border: 1px solid #222; }
         .share-btn { display: inline-block; margin: 5px; padding: 8px 12px; border-radius: 8px; text-decoration: none; color: white; font-weight: bold; font-size: 12px; }
@@ -42,13 +34,13 @@
 <body onload="loadGlobalScore()">
 
     <div id="splash-screen">
-        <h1 class="brand-name">BRSMAYKA OS</h1>
+        <h1 class="brand-name">BRSMAYKA</h1>
         <button class="btn" style="width:200px" onclick="bootSystem()">ENTER SYSTEM</button>
     </div>
 
     <div id="persistent-score">Points: <span id="total-points">0</span></div>
     
-    <h1 class="brand-name">BRSMAYKA GAMING</h1>
+    <h1 class="brand-name">BRSMAYKA</h1>
 
     <div style="margin: 15px 0;">
         <div id="sfcj1hadcun8xqdfhbzttteef2bq7wl376p"></div>
@@ -65,7 +57,7 @@
 
     <footer>
         <div style="margin: 20px 0;">
-            <a href="YOUR_GOOGLE_FORM_LINK_HERE" target="_blank" style="color:var(--accent-green); text-decoration:none; font-weight:bold; border:2px solid var(--accent-green); padding:8px 20px; border-radius:25px; display:inline-block;">⭐ RATE OUR GAMES</a>
+            <a href="رابط_جوجل_هنا" target="_blank" style="color:var(--accent-green); text-decoration:none; font-weight:bold; border:2px solid var(--accent-green); padding:8px 20px; border-radius:25px; display:inline-block;">⭐ RATE OUR GAMES</a>
         </div>
 
         <div class="share-container">
@@ -157,7 +149,6 @@
             document.getElementById('gameModal').style.display = 'block';
             document.getElementById('custom-result-overlay').style.display = 'none';
             const view = document.getElementById('game-view'); view.innerHTML = '';
-            
             timeLeft = 15;
             clearInterval(gameTimer);
             gameTimer = setInterval(() => {
@@ -167,20 +158,14 @@
             }, 100);
 
             if(mode === 'xo') {
-                view.innerHTML = `<div style="margin-bottom:10px;">
-                    <button class="lvl-btn ${difficulty==='easy'?'active':''}" onclick="difficulty='easy';start('xo')">Easy</button>
-                    <button class="lvl-btn ${difficulty==='med'?'active':''}" onclick="difficulty='med';start('xo')">Med</button>
-                    <button class="lvl-btn ${difficulty==='hard'?'active':''}" onclick="difficulty='hard';start('xo')">Hard</button>
-                </div><div id="xo-grid" style="display:grid; grid-template-columns:repeat(3,75px); gap:8px; justify-content:center;"></div>`;
+                view.innerHTML = `<div style="margin-bottom:10px;"><button class="lvl-btn ${difficulty==='easy'?'active':''}" onclick="difficulty='easy';start('xo')">Easy</button><button class="lvl-btn ${difficulty==='med'?'active':''}" onclick="difficulty='med';start('xo')">Med</button><button class="lvl-btn ${difficulty==='hard'?'active':''}" onclick="difficulty='hard';start('xo')">Hard</button></div><div id="xo-grid" style="display:grid; grid-template-columns:repeat(3,75px); gap:8px; justify-content:center;"></div>`;
                 for(let i=0; i<9; i++) {
                     const c = document.createElement('div'); c.className = 'cell'; c.id = 'c'+i;
                     c.onclick = () => { if(canPlay && board[i]==='') { board[i]='X'; c.innerText='X'; c.classList.add('p-x'); canPlay=false; if(!checkWin(board,'X')) { if(board.includes('')) setTimeout(aiMove, 400); else showResult('DRAW','Fair Game!',true); } else showResult('WIN','Great!',true); } };
                     document.getElementById('xo-grid').appendChild(c);
                 }
             } else if(mode === 'ball') {
-                view.innerHTML = `<h3>Catch the Ghost!</h3><div id="area" style="height:250px; position:relative; background:#111; overflow:hidden; border-radius:15px;">
-                    <div id="ghost" style="position:absolute; font-size:40px; cursor:pointer; transition:0.15s linear;" onclick="score++; playSfx(1200,'sine',0.05,0.1); if(score>=10) showResult('WIN','Hunter!',true)">👻</div>
-                </div>`;
+                view.innerHTML = `<h3>Catch the Ghost!</h3><div id="area" style="height:250px; position:relative; background:#111; overflow:hidden; border-radius:15px;"><div id="ghost" style="position:absolute; font-size:40px; cursor:pointer; transition:0.15s linear;" onclick="score++; playSfx(1200,'sine',0.05,0.1); if(score>=10) showResult('WIN','Hunter!',true)">👻</div></div>`;
                 const g = document.getElementById('ghost');
                 const moveGhost = () => { if(currentMode==='ball') { g.style.left=Math.random()*85+'%'; g.style.top=Math.random()*85+'%'; setTimeout(moveGhost, 500); } };
                 moveGhost();
