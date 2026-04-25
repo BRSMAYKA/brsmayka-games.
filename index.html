@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266"
-     crossorigin="anonymous"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/ads5416315671829266" crossorigin="anonymous"></script>
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5416315671829266" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BRSMAYKA GAMING - Elite Edition</title>
@@ -33,13 +32,20 @@
         .lvl-btn { padding: 6px 12px; font-size: 11px; cursor: pointer; border-radius: 5px; border: 1px solid var(--primary); background: transparent; color: white; margin: 2px; }
         .lvl-btn.active { background: var(--accent-green); color: black; }
 
-        footer { margin-top: 60px; padding-bottom: 40px; border-top: 1px solid #222; }
+        /* Star Rating Style */
+        .rating-box { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; max-width: 300px; margin: 20px auto; border: 1px solid #333; }
+        .stars { font-size: 30px; cursor: pointer; display: flex; justify-content: center; gap: 5px; direction: ltr; }
+        .star { color: #444; transition: 0.2s; }
+        .star.active { color: #ffcc00; text-shadow: 0 0 10px #ffcc00; }
+        .rating-text { font-size: 12px; margin-top: 8px; color: #aaa; }
+
+        footer { margin-top: 40px; padding-bottom: 40px; border-top: 1px solid #222; }
         .share-container { margin: 25px auto; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 15px; max-width: 400px; border: 1px solid #222; }
         .share-btn { display: inline-block; margin: 5px; padding: 8px 12px; border-radius: 8px; text-decoration: none; color: white; font-weight: bold; font-size: 12px; }
         .wa { background: #25D366; } .fb { background: #1877F2; } .tw-x { background: #000; border: 1px solid #444; }
     </style>
 </head>
-<body onload="loadGlobalScore()">
+<body onload="initApp()">
 
     <div id="splash-screen">
         <h1 class="brand-name">BRSMAYKA OS</h1>
@@ -64,6 +70,18 @@
         <div class="game-card" onclick="start('color')">🎨 <h3>Color</h3></div>
         <div class="game-card" onclick="start('react')">⏱️ <h3>React</h3></div>
         <div class="game-card" onclick="start('fastclick')">🎯 <h3>Fast Click</h3></div>
+    </div>
+
+    <div class="rating-box">
+        <div style="font-size: 13px; margin-bottom: 10px; color: var(--accent-green);">RATE OUR SYSTEM</div>
+        <div class="stars" id="star-container">
+            <span class="star" onclick="rate(1)">★</span>
+            <span class="star" onclick="rate(2)">★</span>
+            <span class="star" onclick="rate(3)">★</span>
+            <span class="star" onclick="rate(4)">★</span>
+            <span class="star" onclick="rate(5)">★</span>
+        </div>
+        <div class="rating-text" id="rating-info">Loading average rating...</div>
     </div>
 
     <footer>
@@ -106,6 +124,42 @@
         let audioCtx, currentMode, score = 0, gameTimer, timeLeft, globalPoints = 0;
         let board = [], canPlay = true, difficulty = 'hard', reactState = 'wait';
 
+        function initApp() {
+            loadGlobalScore();
+            updateRatingUI();
+        }
+
+        // --- Rating System Functions ---
+        function rate(n) {
+            localStorage.setItem('user_rating', n);
+            // Simulate fake global stats for visitor engagement
+            let totalVotes = parseInt(localStorage.getItem('fake_votes')) || 124;
+            if(!localStorage.getItem('voted')) {
+                totalVotes++;
+                localStorage.setItem('fake_votes', totalVotes);
+                localStorage.setItem('voted', 'true');
+            }
+            updateRatingUI();
+            playSfx(800, 'sine', 0.05, 0.2);
+        }
+
+        function updateRatingUI() {
+            const userRating = localStorage.getItem('user_rating') || 0;
+            const stars = document.querySelectorAll('.star');
+            const votes = localStorage.getItem('fake_votes') || 124;
+            
+            stars.forEach((s, i) => {
+                s.classList.toggle('active', i < userRating);
+            });
+
+            if(userRating > 0) {
+                document.getElementById('rating-info').innerText = `Your rating: ${userRating}/5 (${votes} total)`;
+            } else {
+                document.getElementById('rating-info').innerText = `Avg: 4.8/5 (Based on ${votes} visitors)`;
+            }
+        }
+
+        // --- Original Game Logic ---
         function playSfx(f, type, vol, dur) {
             if(!audioCtx) return;
             const o = audioCtx.createOscillator();
